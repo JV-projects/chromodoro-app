@@ -4,7 +4,7 @@ import { Text, View, StyleSheet } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Welcome to my Expo app!</Text>
+      <Text>Olá Mundo</Text>
     </View>
   );
 }
