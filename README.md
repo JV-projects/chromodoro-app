@@ -1,9 +1,9 @@
-# Bem vindo ao Chromodoro App 👋
+# Bem vindo ao Chromodoro App :tomato:
 
 O Chromodoro App permite que você utilize a técnica de gestão de tempo, chamada Pomodoro, de uma forma prática bem na palma da sua mão.
 Impulsione sua produtividade! 
 
-## Hora do foco! 
+## Hora do foco! :dart:
 
 ## Como usar
 
