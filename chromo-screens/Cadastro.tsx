@@ -2,7 +2,14 @@ import React from "react";
 
 import { View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet } from "react-native";
 
-export default function Cadastro(){
+
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type Cadastro = {
+    handleTrocaForm: () => void
+}
+
+export default function Cadastro({handleTrocaForm}: Cadastro){
 
     return(
         <View style={styles.viewLogin}>
@@ -32,11 +39,11 @@ export default function Cadastro(){
             </View>
 
             <View style={styles.viewLink}>
-                <Text>Já tem conta?<Pressable><Text style={{color: 'blue'}}>Faça seu login.</Text></Pressable></Text>
+                <Text>Já tem conta?</Text>
+                <Pressable onPress={() => handleTrocaForm()}><Text style={{color: 'blue'}}> Faça seu login.</Text></Pressable>
             </View>
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -73,7 +80,9 @@ const styles = StyleSheet.create({
         borderRadius: 12
     },
     viewLink:{
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+
 })
