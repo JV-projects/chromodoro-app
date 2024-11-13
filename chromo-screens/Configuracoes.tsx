@@ -9,60 +9,95 @@ import LabelInput from "@/components/LabelInput";
 import SwitchLabel from "@/components/SwitchLabel";
 
 interface Configs {
-    pausa: boolean, 
-    pomodoro: boolean, 
+    pausa: boolean,
+    pomodoro: boolean,
     timers: boolean
 }
 
 export default function Configuracoes() {
 
-    const configuracoesInit : Configs = {
-        pausa: false, 
-        pomodoro: false, 
+    const configuracoesInit: Configs = {
+        pausa: false,
+        pomodoro: false,
         timers: false
     }
+
+    const [pomodoroMinutos, setPomodoroMinutos] = useState("")
+    const [pausaMinutos, setPausaMinutos] = useState("")
+    const [pausaLongaMinutos, setPausaLongaMinutos] = useState("")
 
     const [configuracoes, setConfiguracoes] = useState(configuracoesInit)
 
 
     const onChangeToggle = (valor: keyof Configs) => {
 
-        setConfiguracoes((prevState) => ({...prevState, valor: !prevState[valor]}))
+        setConfiguracoes((prevState) => ({ ...prevState, [valor]: !prevState[valor] }))
 
     }
 
     return (
-        <View>
+        <View style={styles.containerConfig}>
 
-            <Text>Configurações</Text>
+            <Text style={styles.tituloTela}>Configurações</Text>
 
             <TituloIcone titulo="TIMER" icone="timer-outline" />
 
-            <View>
+            <View style={styles.containerInputs}>
 
                 <View>
-                    <Text>Tempo (minutos)</Text>
+                    <Text style={{fontWeight: '500'}}>Tempo (minutos)</Text>
                 </View>
-                <View>
-                    <LabelInput label="Pomodoro"/>
+                <View style={styles.viewInputs}>
+                    <LabelInput label="Pomodoro"
+                        inputMode="numeric"
+                        value={pomodoroMinutos}
+                        onChange={(e) => setPomodoroMinutos((e.target.value))} 
+                        placeholder="0"/>
 
-                    <LabelInput label="Pausa curta"/>
+                    <LabelInput label="Pausa curta"
+                        inputMode="numeric"
+                        value={pausaMinutos}
+                        onChange={(e) => setPausaMinutos((e.target.value))} 
+                        placeholder="0"/>
 
-                    <LabelInput label="Pausa longa"/>
+                    <LabelInput label="Pausa longa"
+                        inputMode="numeric"
+                        value={pausaLongaMinutos}
+                        onChange={(e) => setPausaLongaMinutos((e.target.value))} 
+                        placeholder="0"/>
                 </View>
 
             </View>
 
-            <View>
+            <View style={{gap: 10}}>
                 <SwitchLabel label="Iniciar pausa automaticamente" onChangeToggle={() => onChangeToggle('pausa')} value={configuracoes.pausa} />
-                <SwitchLabel label="Iniciar pomodoro automaticamente" onChangeToggle={() => onChangeToggle('pomodoro')} value={configuracoes.pomodoro}/>
+                <SwitchLabel label="Iniciar pomodoro automaticamente" onChangeToggle={() => onChangeToggle('pomodoro')} value={configuracoes.pomodoro} />
             </View>
 
             <TituloIcone titulo="ALARME" icone="timer-outline" />
 
             <View>
-                <SwitchLabel label="Tocar alarme na troca de timers" onChangeToggle={() => onChangeToggle('pomodoro')} value={configuracoes.timers}/>
+                <SwitchLabel label="Tocar alarme na troca de timers" onChangeToggle={() => onChangeToggle('timers')} value={configuracoes.timers} />
             </View>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    containerConfig:{
+        flex: 1,
+        padding: 18,
+        gap: 30
+    },
+    tituloTela:{
+        color:"#171717",
+        fontSize: 22
+    },
+    containerInputs:{
+        gap: 10
+    },
+    viewInputs:{
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    }   
+})

@@ -11,9 +11,19 @@ type TituloIcone = {
 
 export default function TituloIcone({titulo, icone} : TituloIcone){
     return(
-        <View>
+        <View style={styles.view}>
              {icone && <MaterialCommunityIcons name={icone} size={20} color="#535353" />}
-            <Text>{titulo}</Text>
+            <Text style={styles.titulo}>{titulo}</Text>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    view:{
+        flexDirection: 'row',
+        gap: 2
+    },
+    titulo:{
+        color: "#535353"
+    }
+})
