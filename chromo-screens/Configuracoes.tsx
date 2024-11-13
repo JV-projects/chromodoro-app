@@ -74,10 +74,10 @@ export default function Configuracoes() {
                 <SwitchLabel label="Iniciar pomodoro automaticamente" onChangeToggle={() => onChangeToggle('pomodoro')} value={configuracoes.pomodoro} />
             </View>
 
-            <TituloIcone titulo="ALARME" icone="timer-outline" />
+            <TituloIcone titulo="NOTIFICAÇÕES" icone="bell-outline" />
 
             <View>
-                <SwitchLabel label="Tocar alarme na troca de timers" onChangeToggle={() => onChangeToggle('timers')} value={configuracoes.timers} />
+                <SwitchLabel label="Notificar a troca dos timers" onChangeToggle={() => onChangeToggle('timers')} value={configuracoes.timers} />
             </View>
         </View>
     )
