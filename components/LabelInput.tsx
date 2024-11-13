@@ -16,16 +16,17 @@ export default function LabelInput({ label, inputMode, value, onChange, placehol
             <Text style={styles.label}>{label}</Text>
             <TextInput style={styles.input} inputMode={inputMode}
             value={value}
-            onChange={onChange}
-            placeholder={placeholder}/>
+            onChangeText={onChange}
+            placeholder={placeholder}/> 
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     input: {
+        width: 120,
         height: 50,
-        paddingLeft: 10,
+        padding: 10,
         backgroundColor: "#ececec",
         borderRadius: 4,
     },

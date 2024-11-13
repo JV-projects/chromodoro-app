@@ -51,19 +51,19 @@ export default function Configuracoes() {
                     <LabelInput label="Pomodoro"
                         inputMode="numeric"
                         value={pomodoroMinutos}
-                        onChange={(e) => setPomodoroMinutos((e.target.value))} 
+                        onChange={setPomodoroMinutos} 
                         placeholder="0"/>
 
                     <LabelInput label="Pausa curta"
                         inputMode="numeric"
                         value={pausaMinutos}
-                        onChange={(e) => setPausaMinutos((e.target.value))} 
+                        onChange={setPausaMinutos} 
                         placeholder="0"/>
 
                     <LabelInput label="Pausa longa"
                         inputMode="numeric"
                         value={pausaLongaMinutos}
-                        onChange={(e) => setPausaLongaMinutos((e.target.value))} 
+                        onChange={setPausaLongaMinutos} 
                         placeholder="0"/>
                 </View>
 
