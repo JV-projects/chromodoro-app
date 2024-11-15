@@ -6,7 +6,7 @@ type LabelInput = {
     label: string,
     inputMode: InputModeOptions,
     value: string,
-    onChange: () => void,
+    onChange: (e:any) => void,
     placeholder: string
 }
 
