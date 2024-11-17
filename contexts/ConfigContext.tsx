@@ -23,9 +23,9 @@ const ConfigContext = createContext<ConfigContextData | undefined>(undefined);
 // Provider do contexto
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     const configuracoesInit: Configs = {
-        pomodoro: { minutos: '' },
-        pausaCurta: { minutos: '' },
-        pausaLonga: { minutos: '' },
+        pomodoro: { minutos: '25' },
+        pausaCurta: { minutos: '5' },
+        pausaLonga: { minutos: '25' },
         pausaAutomatica: false,
         pomodoroAutomatico: false,
         notifica: false,
