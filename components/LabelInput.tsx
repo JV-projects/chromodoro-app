@@ -6,15 +6,16 @@ type LabelInput = {
     label: string,
     inputMode: InputModeOptions,
     value: string,
-    onChange: (e:any) => void,
+    onChange: (valor: string) => void,
     placeholder: string
 }
 
-export default function LabelInput({ label, inputMode, value, onChange, placeholder }: LabelInput) {
+export default function LabelInput({label, inputMode, value, onChange, placeholder }: LabelInput) {
     return (
         <View>
             <Text style={styles.label}>{label}</Text>
             <TextInput style={styles.input} inputMode={inputMode}
+            
             value={value}
             onChangeText={onChange}
             placeholder={placeholder}/> 

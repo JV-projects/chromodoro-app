@@ -1,103 +1,101 @@
-import React from "react";
-
-import { useState } from "react";
-
-import { Text, View, StyleSheet, TextInput, Switch } from "react-native";
-
+import React, { useEffect } from "react";
+import { Text, View, StyleSheet } from "react-native";
 import TituloIcone from "@/components/TituloIcone";
 import LabelInput from "@/components/LabelInput";
 import SwitchLabel from "@/components/SwitchLabel";
-
-interface Configs {
-    pausa: boolean,
-    pomodoro: boolean,
-    timers: boolean
-}
+import { useConfig } from "@/contexts/ConfigContext";
+import { guardarConfigs } from "@/service/localStorage";
 
 export default function Configuracoes() {
+    const { configuracoes, setConfiguracoes } = useConfig();
 
-    const configuracoesInit: Configs = {
-        pausa: false,
-        pomodoro: false,
-        timers: false
-    }
+    const onChangeToggle = (valor: keyof typeof configuracoes) => {
+        setConfiguracoes((prevState) => {
+            const newConfig = { ...prevState, [valor]: !prevState[valor] };
+            guardarConfigs(newConfig);
+            return newConfig;
+        });
+    };
 
-    const [pomodoroMinutos, setPomodoroMinutos] = useState("")
-    const [pausaMinutos, setPausaMinutos] = useState("")
-    const [pausaLongaMinutos, setPausaLongaMinutos] = useState("")
-
-    const [configuracoes, setConfiguracoes] = useState(configuracoesInit)
-
-
-    const onChangeToggle = (valor: keyof Configs) => {
-
-        setConfiguracoes((prevState) => ({ ...prevState, [valor]: !prevState[valor] }))
-
-    }
+    const onChangeInputs = (campo: keyof typeof configuracoes, valor: string) => {
+        setConfiguracoes((prevState) => {
+            const newConfig = { ...prevState, [campo]: { minutos: valor } };
+            guardarConfigs(newConfig);
+            return newConfig;
+        });
+    };
 
     return (
         <View style={styles.containerConfig}>
-
             <Text style={styles.tituloTela}>Configurações</Text>
-
             <TituloIcone titulo="TIMER" icone="timer-outline" />
-
             <View style={styles.containerInputs}>
-
                 <View>
-                    <Text style={{fontWeight: '500'}}>Tempo (minutos)</Text>
+                    <Text style={{ fontWeight: '500' }}>Tempo (minutos)</Text>
                 </View>
                 <View style={styles.viewInputs}>
-                    <LabelInput label="Pomodoro"
+                    <LabelInput
+                        label="Pomodoro"
                         inputMode="numeric"
-                        value={pomodoroMinutos}
-                        onChange={setPomodoroMinutos} 
-                        placeholder="0"/>
-
-                    <LabelInput label="Pausa curta"
+                        value={configuracoes.pomodoro.minutos}
+                        onChange={(valor) => onChangeInputs('pomodoro', valor)}
+                        placeholder="0"
+                    />
+                    <LabelInput
+                        label="Pausa curta"
                         inputMode="numeric"
-                        value={pausaMinutos}
-                        onChange={setPausaMinutos} 
-                        placeholder="0"/>
-
-                    <LabelInput label="Pausa longa"
+                        value={configuracoes.pausaCurta.minutos}
+                        onChange={(valor) => onChangeInputs('pausaCurta', valor)}
+                        placeholder="0"
+                    />
+                    <LabelInput
+                        label="Pausa longa"
                         inputMode="numeric"
-                        value={pausaLongaMinutos}
-                        onChange={setPausaLongaMinutos} 
-                        placeholder="0"/>
+                        value={configuracoes.pausaLonga.minutos}
+                        onChange={(valor) => onChangeInputs('pausaLonga', valor)}
+                        placeholder="0"
+                    />
                 </View>
-
             </View>
-
-            <View style={{gap: 10}}>
-                <SwitchLabel label="Iniciar pausa automaticamente" onChangeToggle={() => onChangeToggle('pausa')} value={configuracoes.pausa} />
-                <SwitchLabel label="Iniciar pomodoro automaticamente" onChangeToggle={() => onChangeToggle('pomodoro')} value={configuracoes.pomodoro} />
+            <View style={{ gap: 10 }}>
+                <SwitchLabel
+                    label="Iniciar pausa automaticamente"
+                    onChangeToggle={() => onChangeToggle('pausaAutomatica')}
+                    value={configuracoes.pausaAutomatica}
+                />
+                <SwitchLabel
+                    label="Iniciar pomodoro automaticamente"
+                    onChangeToggle={() => onChangeToggle('pomodoroAutomatico')}
+                    value={configuracoes.pomodoroAutomatico}
+                />
             </View>
-
             <TituloIcone titulo="NOTIFICAÇÕES" icone="bell-outline" />
-
             <View>
-                <SwitchLabel label="Notificar a troca dos timers" onChangeToggle={() => onChangeToggle('timers')} value={configuracoes.timers} />
+                <SwitchLabel
+                    label="Notificar a troca dos timers"
+                    onChangeToggle={() => onChangeToggle('notifica')}
+                    value={configuracoes.notifica}
+                />
             </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-    containerConfig:{
+    containerConfig: {
         flex: 1,
         padding: 18,
         gap: 30
     },
-    tituloTela:{
-        color:"#171717",
+    tituloTela: {
+        color: "#171717",
         fontSize: 22
     },
-    containerInputs:{
+    containerInputs: {
         gap: 10
     },
-    viewInputs:{
+    viewInputs: {
         flexDirection: 'row',
         justifyContent: 'space-between'
-    }   
+    }
 })

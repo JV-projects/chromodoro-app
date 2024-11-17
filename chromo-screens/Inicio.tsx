@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
 import React, { useState, useRef, useEffect } from "react";
+import { useConfig } from "@/contexts/ConfigContext";
 
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
@@ -10,9 +11,27 @@ interface Tempo {
     segundos: number
 }
 
+interface Timer {
+    pomodoro: {
+        minutos: number,
+        segundos: number,
+    },
+    pausaCurta: {
+        minutos: number,
+        segundos: number,
+    },
+    pausaLonga: {
+        minutos: number,
+        segundos: number,
+    }
+}
+
 export default function Inicio() {
 
-    const [pomodoroAtivo, setPomodoroAtivo] = useState(false);
+    const { configuracoes } = useConfig();
+
+    //Estados do timer
+    const [pomodoroAtivo, setPomodoroAtivo] = useState(true);
     const [pausaCurtaAtiva, setPausaCurtaAtiva] = useState(false);
     const [pausaLongaAtiva, setPausaLongaAtiva] = useState(false);
 
@@ -21,42 +40,48 @@ export default function Inicio() {
     const [mensagem, setMensagem] = useState("");
 
     const [tempo, setTempo] = useState<Tempo>({ minutos: 0, segundos: 0 })
-
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleStateFalse = () => {
-        setPomodoroAtivo(false)
-        setPausaLongaAtiva(false)
-        setPausaCurtaAtiva(false)
+    const timers = useRef<Timer>({
+        pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
+        pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
+        pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
+    })
 
-        setPlay(false)
+    const iniciarModo = (modo: "pomodoro" | "pausaCurta" | "pausaLonga") => {
 
+        // Reseta e pausa o timer
+        setPomodoroAtivo(false);
+        setPausaCurtaAtiva(false);
+        setPausaLongaAtiva(false);
+        setPlay(false);
         clearInterval(intervalRef.current as NodeJS.Timeout);
-        setTempo({ minutos: 0, segundos: 0 });
-    }
 
-    const handleIniciarPomodoro = () => {
-        handleStateFalse()
-        setPomodoroAtivo(true)
-        setMensagem("Hora do foco!")
+        // Mapeando cada estado
+        const modos = {
+            pomodoro: {
+                setAtivo: setPomodoroAtivo,
+                mensagem: "Hora do foco!",
+                tempo: timers.current.pomodoro,
+            },
+            pausaCurta: {
+                setAtivo: setPausaCurtaAtiva,
+                mensagem: "Hora da pausa...",
+                tempo: timers.current.pausaCurta,
+            },
+            pausaLonga: {
+                setAtivo: setPausaLongaAtiva,
+                mensagem: "Hora de uma boa pausa...",
+                tempo: timers.current.pausaLonga,
+            },
+        };
 
-        setTempo({ minutos: 0, segundos: 3 });
-    }
-
-    const handleIniciarPausaCurta = () => {
-        handleStateFalse()
-        setPausaCurtaAtiva(true)
-        setMensagem("Hora da pausa...")
-
-        setTempo({ minutos: 0, segundos: 5 });
-    }
-
-    const handleIniciarPausaLonga = () => {
-        handleStateFalse()
-        setPausaLongaAtiva(true)
-        setMensagem("Hora de uma boa pausa...")
-        setTempo({ minutos: 0, segundos: 1 });
-    }
+        // Define o modo com base no parâmetro
+        const { setAtivo, mensagem, tempo } = modos[modo];
+        setAtivo(true);
+        setMensagem(mensagem);
+        setTempo({ minutos: tempo.minutos, segundos: 0 });
+    };
 
     const iniciarTimer = () => {
         if (intervalRef.current) {
@@ -78,7 +103,7 @@ export default function Inicio() {
                     return { minutos: prevTempo.minutos - 1, segundos: 59 };
 
                 } else {
-                    /* Se segundo forem === 0 reinicia a contagem de segundos*/
+
                     return { minutos: prevTempo.minutos, segundos: prevTempo.segundos - 1 };
                 }
             });
@@ -88,26 +113,39 @@ export default function Inicio() {
     useEffect(() => {
         if (play) {
             iniciarTimer();
+
         } else if (intervalRef.current) {
             clearInterval(intervalRef.current)
         }
 
         return () => clearInterval(intervalRef.current as NodeJS.Timeout);
 
-    }, [play]);
+    }, [play, timers]);
+
+    // Atualiza o timer sempre que as configurações mudarem
+    useEffect(() => {
+        timers.current = {
+            pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
+            pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
+            pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
+        };
+
+        iniciarModo('pomodoro')
+
+    }, [configuracoes]);
 
     const trocarPlay = () => {
         setPlay(!play);
-      };
+    };
 
     return (
         <ScrollView>
             <View style={styles.viewInicio}>
 
                 <View style={styles.viewButtons}>
-                    <Button onPress={handleIniciarPomodoro} label="Pomodoro" isClicado={pomodoroAtivo} />
-                    <Button onPress={handleIniciarPausaCurta} label="Pausa curta" isClicado={pausaCurtaAtiva} />
-                    <Button onPress={handleIniciarPausaLonga} label="Pausa longa" isClicado={pausaLongaAtiva} />
+                    <Button onPress={() => iniciarModo('pomodoro')} label="Pomodoro" isClicado={pomodoroAtivo} />
+                    <Button onPress={() => iniciarModo('pausaCurta')} label="Pausa curta" isClicado={pausaCurtaAtiva} />
+                    <Button onPress={() => iniciarModo('pausaLonga')} label="Pausa longa" isClicado={pausaLongaAtiva} />
                 </View>
 
                 <View>
