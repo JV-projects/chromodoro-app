@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { ConfigProvider } from "@/contexts/ConfigContext";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -24,77 +25,77 @@ export default function App() {
     <NavigationContainer>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
+          <ConfigProvider>
+            <Tab.Navigator
+              screenOptions={{
+                headerShown: false,
+                tabBarStyle: {
+                  backgroundColor: '#fff',
+                  height: 60,
+                },
+                tabBarActiveTintColor: 'white',
+                tabBarInactiveTintColor: 'gray',
+              }}>
 
-          <Tab.Navigator
-            screenOptions={{
-              headerShown: false,
-              tabBarStyle: {
-                backgroundColor: '#fff',
-                height: 60,
-              },
-              tabBarActiveTintColor: 'white',
-              tabBarInactiveTintColor: 'gray',
-            }}>
+              <Tab.Screen
+                name="Pomodoro"
+                component={Inicio}
+                options={{
+                  tabBarLabelStyle: {
+                    display: 'none',
+                  },
+                  tabBarIcon: ({ focused }) => {
+                    return (
+                      <MaterialCommunityIcons style={focused && styles.icon} name="timer-outline" size={28} color={focused ? "#fff" : "#535353"} />
+                    );
+                  },
+                }}
+              />
 
-            <Tab.Screen
-              name="Pomodoro"
-              component={Inicio}
-              options={{
-                tabBarLabelStyle: {
-                  display: 'none',  
-                },
-                tabBarIcon: ({focused}) => {
-                  return (
-                    <MaterialCommunityIcons style={focused && styles.icon} name="timer-outline" size={28} color={focused ? "#fff" : "#535353"} />
-                  );
-                },
-              }}
-            />
-
-            <Tab.Screen
-              name="Relatório"
-              component={Relatorio}
-              options={{
-                tabBarLabelStyle: {
-                  display: 'none',  
-                },
-                tabBarIcon: ({focused}) => {
-                  return (
-                    <FontAwesome6 style={focused && styles.icon} name="chart-simple" size={28} color={focused ? "#fff" : "#535353"} />
-                  );
-                },
-              }}
-            />
-            <Tab.Screen
-              name="Configurações"
-              component={Configuracoes}
-              options={{
-                tabBarLabelStyle: {
-                  display: 'none',  
-                },
-                tabBarIcon: ({focused}) => {
-                  return (
-                    <Octicons style={focused && styles.icon} name="gear" size={28} color={focused ? "#fff" : "#535353"} />
-                  );
-                },
-              }}
-            />
-            <Tab.Screen
-              name="Conta"
-              component={Conta}
-              options={{
-                tabBarLabelStyle: {
-                  display: 'none',  
-                },
-                tabBarIcon: ({focused}) => {
-                  return (
-                    <MaterialIcons style={focused && styles.icon} name="account-circle" size={28} color={focused ? "#fff" : "#535353"} />
-                  );
-                },
-              }}
-            />
-          </Tab.Navigator>
-
+              <Tab.Screen
+                name="Relatório"
+                component={Relatorio}
+                options={{
+                  tabBarLabelStyle: {
+                    display: 'none',
+                  },
+                  tabBarIcon: ({ focused }) => {
+                    return (
+                      <FontAwesome6 style={focused && styles.icon} name="chart-simple" size={28} color={focused ? "#fff" : "#535353"} />
+                    );
+                  },
+                }}
+              />
+              <Tab.Screen
+                name="Configurações"
+                component={Configuracoes}
+                options={{
+                  tabBarLabelStyle: {
+                    display: 'none',
+                  },
+                  tabBarIcon: ({ focused }) => {
+                    return (
+                      <Octicons style={focused && styles.icon} name="gear" size={28} color={focused ? "#fff" : "#535353"} />
+                    );
+                  },
+                }}
+              />
+              <Tab.Screen
+                name="Conta"
+                component={Conta}
+                options={{
+                  tabBarLabelStyle: {
+                    display: 'none',
+                  },
+                  tabBarIcon: ({ focused }) => {
+                    return (
+                      <MaterialIcons style={focused && styles.icon} name="account-circle" size={28} color={focused ? "#fff" : "#535353"} />
+                    );
+                  },
+                }}
+              />
+            </Tab.Navigator>
+          </ConfigProvider>
         </SafeAreaView>
       </SafeAreaProvider>
     </NavigationContainer>
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  icon:{
+  icon: {
     backgroundColor: "#D1717B",
     padding: 10,
     borderRadius: 12,
