@@ -1,17 +1,43 @@
-import React from "react";
-
-import { View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet } from "react-native";
-
-
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, {useEffect, useState} from "react";
+import {View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet} from "react-native";
+import { post } from '../service/api'
+import { UsuarioController } from "@/assets/endpoints/Endpoints";
+import axios from "axios";
 
 type Cadastro = {
     handleTrocaForm: () => void
 }
 
-export default function Cadastro({handleTrocaForm}: Cadastro){
+interface Data {
+    nome: string,
+    email: string,
+    senha: string,
+}
 
-    return(
+export default function Cadastro({handleTrocaForm}: Cadastro) {
+
+    const [formData, setFormData] = useState<Data>({nome: "", email: "", senha: ""})
+
+    console.log(formData)
+
+    const getData = (texto: string, prop: keyof Data) => {
+
+        setFormData((prevState) => ({...prevState, [prop]: texto}));
+    }
+
+    const onSubmit = async () => {
+        console.log("onsubmit")
+
+        try {
+            const resposta = await post<Data, String>(formData, UsuarioController.registrar)
+
+            console.log(resposta);
+        } catch (erro) {
+            console.log(erro)
+        }
+    }
+
+    return (
         <View style={styles.viewLogin}>
             <View>
                 <Text style={styles.titulo}>Crie sua conta</Text>
@@ -19,58 +45,60 @@ export default function Cadastro({handleTrocaForm}: Cadastro){
 
             <View>
                 <Text style={styles.label}>Nome</Text>
-                <TextInput style={styles.input}/>
+                <TextInput style={styles.input} inputMode={"text"}
+                           onChangeText={(texto) => getData(texto, "nome")}/>
             </View>
 
             <View>
                 <Text style={styles.label}>Email</Text>
-                <TextInput style={styles.input}/>
+                <TextInput style={styles.input} keyboardType={"email-address"} inputMode={"email"}
+                           autoCapitalize={"none"} onChangeText={(texto) => getData(texto, "email")}/>
             </View>
 
             <View>
                 <Text style={styles.label}>Senha</Text>
-                <TextInput style={styles.input}/>
+                <TextInput style={styles.input} inputMode={"text"} secureTextEntry={true} autoCapitalize={"none"}
+                           onChangeText={(texto) => getData(texto, "senha")}/>
             </View>
 
             <View>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Cadastrar</Text>
+                <TouchableOpacity style={styles.button} onPress={onSubmit}>
+                    <Text style={styles.buttonText} >Cadastrar</Text>
                 </TouchableOpacity>
             </View>
 
             <View style={styles.viewLink}>
                 <Text>Já tem conta?</Text>
-                <Pressable onPress={() => handleTrocaForm()}><Text style={{color: 'blue'}}> Faça seu login.</Text></Pressable>
+                <Pressable onPress={() => handleTrocaForm()}><Text style={{color: 'blue'}}> Faça seu
+                    login.</Text></Pressable>
             </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    titulo:{
+    titulo: {
         fontSize: 20
     },
-    formGrupo: {
-
-    },
+    formGrupo: {},
     label: {
         fontSize: 16
     },
-    input:{
+    input: {
         height: 50,
         backgroundColor: "#ECECEC",
         borderRadius: 4,
     },
-    button:{
+    button: {
         backgroundColor: "#535353",
         padding: 20,
         alignItems: 'center',
         borderRadius: 4
     },
-    buttonText:{
+    buttonText: {
         color: "#fff"
     },
-    viewLogin:{
+    viewLogin: {
         width: "90%",
         margin: 'auto',
         padding: 20,
@@ -79,7 +107,7 @@ const styles = StyleSheet.create({
         borderColor: '#D1717B',
         borderRadius: 12
     },
-    viewLink:{
+    viewLink: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
