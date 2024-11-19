@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { guardarConfigs, lerConfigs } from "@/service/localStorage";
+import { lerItem } from "@/service/localStorage";
 
 // Defina a interface para as configurações
 interface Configs {
@@ -25,7 +25,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     const configuracoesInit: Configs = {
         pomodoro: { minutos: '25' },
         pausaCurta: { minutos: '5' },
-        pausaLonga: { minutos: '25' },
+        pausaLonga: { minutos: '15' },
         pausaAutomatica: false,
         pomodoroAutomatico: false,
         notifica: false,
@@ -36,7 +36,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     // Carregar as configurações da localStorage assim que o contexto for carregado
     useEffect(() => {
         async function carregar() {
-            const c = await lerConfigs();
+            const c = await lerItem('configuracoes');
             setConfiguracoes(c || configuracoesInit);
         }
         carregar();
