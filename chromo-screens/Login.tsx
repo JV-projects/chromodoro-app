@@ -1,16 +1,50 @@
 import React from "react";
 
-import { useState } from "react";
+import {useState} from "react";
 
-import { View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet } from "react-native";
+import {View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, Alert} from "react-native";
+import {post} from "@/service/api";
+import {UsuarioController} from "@/assets/endpoints/Endpoints";
+import {useNavigation} from "@react-navigation/native";
 
 type Login = {
     handleTrocaForm: () => void
 }
 
-export default function Login({ handleTrocaForm }: Login) {
+interface FormLogin {
+    username: string,
+    senha: string
+}
+
+export default function Login({handleTrocaForm}: Login) {
+
+    const navigation = useNavigation()
 
     const [focus, setFocus] = useState(false)
+    const [formLogin, setFormLogin] = useState<FormLogin>({username: "", senha: ""})
+
+    const getData = (texto: string, prop: keyof FormLogin) => {
+
+        setFormLogin((prevState) => ({...prevState, [prop]: texto}));
+    }
+
+    const onSubmit = async () => {
+        console.log("onsubmit")
+        try {
+            const resposta = await post<FormLogin, string>(formLogin, UsuarioController.login)
+
+            const data = resposta.data;
+
+            console.log(data)
+
+            if (resposta.status == 200) {
+                console.log("logou")
+                navigation.goBack()
+            }
+        } catch (erro) {
+            Alert.alert("Erro", `Ocorreu um erro :(\n${erro}`)
+        }
+    }
 
     return (
         <View style={styles.viewLogin}>
@@ -20,23 +54,26 @@ export default function Login({ handleTrocaForm }: Login) {
 
             <View>
                 <Text style={styles.label}>Email</Text>
-                <TextInput style={styles.input} />
+                <TextInput style={styles.input} keyboardType={"email-address"} inputMode={"email"}
+                           autoCapitalize={'none'}
+                           onChangeText={(texto) => getData(texto, "username")}/>
             </View>
 
             <View>
                 <Text style={styles.label}>Senha</Text>
-                <TextInput style={styles.input}/>
+                <TextInput style={styles.input} secureTextEntry={true} inputMode={"text"} autoCapitalize={'none'}
+                           onChangeText={(texto) => getData(texto, "senha")}/>
             </View>
 
             <View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={onSubmit}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>
             </View>
 
             <View style={styles.viewLink}>
                 <Text>Não tem uma conta?</Text>
-                <Pressable onPress={() => handleTrocaForm()}><Text style={{ color: 'blue' }}> Crie uma.</Text></Pressable>
+                <Pressable onPress={() => handleTrocaForm()}><Text style={{color: 'blue'}}> Crie uma.</Text></Pressable>
             </View>
         </View>
     )
