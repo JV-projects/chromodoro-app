@@ -25,7 +25,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     const configuracoesInit: Configs = {
         pomodoro: { minutos: '25' },
         pausaCurta: { minutos: '5' },
-        pausaLonga: { minutos: '25' },
+        pausaLonga: { minutos: '15' },
         pausaAutomatica: false,
         pomodoroAutomatico: false,
         notifica: false,
