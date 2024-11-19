@@ -34,3 +34,30 @@ export const lerConfigs = async () => {
     }
 
 }
+
+export const guardarToken = async (token) => {
+    try {
+        const token = JSON.stringify(token)
+
+        await AsyncStorage.removeItem("JWT")
+
+        await AsyncStorage.setItem("JWT", token)
+
+        console.log(`Token guardado = ${token}`)
+    } catch (erro) {
+        console.log(erro)
+    }
+}
+
+export const lerToken = async () => {
+    try {
+
+        const configs = await AsyncStorage.getItem("JWT")
+
+        return configs != null ? JSON.parse(configs) : null;
+
+    } catch (e) {
+        console.log(e)
+    }
+
+}
