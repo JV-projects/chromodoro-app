@@ -4,7 +4,7 @@ import TituloIcone from "@/components/TituloIcone";
 import LabelInput from "@/components/LabelInput";
 import SwitchLabel from "@/components/SwitchLabel";
 import { useConfig } from "@/contexts/ConfigContext";
-import { guardarConfigs } from "@/service/localStorage";
+import { guardarItem } from "@/service/localStorage";
 
 export default function Configuracoes() {
     const { configuracoes, setConfiguracoes } = useConfig();
@@ -12,7 +12,7 @@ export default function Configuracoes() {
     const onChangeToggle = (valor: keyof typeof configuracoes) => {
         setConfiguracoes((prevState) => {
             const newConfig = { ...prevState, [valor]: !prevState[valor] };
-            guardarConfigs(newConfig);
+            guardarItem(newConfig, 'configuracoes');
             return newConfig;
         });
     };
@@ -20,7 +20,7 @@ export default function Configuracoes() {
     const onChangeInputs = (campo: keyof typeof configuracoes, valor: string) => {
         setConfiguracoes((prevState) => {
             const newConfig = { ...prevState, [campo]: { minutos: valor } };
-            guardarConfigs(newConfig);
+            guardarItem(newConfig, 'configuracoes');
             return newConfig;
         });
     };

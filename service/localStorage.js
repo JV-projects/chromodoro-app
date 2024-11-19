@@ -1,17 +1,17 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-export const guardarConfigs = async (configs) => {
+export const guardarItem = async (data, key) => {
 
     try {
 
-        const configString = JSON.stringify(configs)
+        const dataString = JSON.stringify(data)
 
-        console.log("Guardou" + configString)
+        console.log("Guardou" + dataString)
 
-        await AsyncStorage.removeItem('configuracoes')
+        await AsyncStorage.removeItem(key)
         
-        await AsyncStorage.setItem('configuracoes', configString);
+        await AsyncStorage.setItem(key, dataString);
 
     } catch (e) {
         console.log("Erro ao guardar configurações")
@@ -19,45 +19,18 @@ export const guardarConfigs = async (configs) => {
 
 }
 
-export const lerConfigs = async () => {
+export const lerItem = async (key) => {
 
     try {
 
-        const configs = await AsyncStorage.getItem("configuracoes")
+        const data = await AsyncStorage.getItem(key)
 
-        console.log("Pegou" + configs)
+        console.log("Pegou" + data)
 
-        return configs != null ? JSON.parse(configs) : null;
+        return data != null ? JSON.parse(data) : null;
 
     } catch (e) {
         console.log("Erro ao pegar configurações")
-    }
-
-}
-
-export const guardarToken = async (token) => {
-    try {
-        const token = JSON.stringify(token)
-
-        await AsyncStorage.removeItem("JWT")
-
-        await AsyncStorage.setItem("JWT", token)
-
-        console.log(`Token guardado = ${token}`)
-    } catch (erro) {
-        console.log(erro)
-    }
-}
-
-export const lerToken = async () => {
-    try {
-
-        const configs = await AsyncStorage.getItem("JWT")
-
-        return configs != null ? JSON.parse(configs) : null;
-
-    } catch (e) {
-        console.log(e)
     }
 
 }
