@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet} from "react-native";
-import { post } from '../service/api'
+import {View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, Alert} from "react-native";
+import { post } from '@/service/api'
+import { RegistrarResponse } from "@/service/apiTypes"
 import { UsuarioController } from "@/assets/endpoints/Endpoints";
-import axios from "axios";
 
 type Cadastro = {
     handleTrocaForm: () => void
@@ -27,13 +27,25 @@ export default function Cadastro({handleTrocaForm}: Cadastro) {
 
     const onSubmit = async () => {
         console.log("onsubmit")
-
         try {
-            const resposta = await post<Data, String>(formData, UsuarioController.registrar)
+            const resposta = await post<Data, RegistrarResponse>(formData, UsuarioController.registrar)
 
-            console.log(resposta);
+            const data = resposta.data;
+
+            if (resposta.status == 200) {
+                Alert.alert("Cadastro bem sucedido!",
+                    `${data.nome}, seu cadastro com o email ${data.email} foi bem sucedido`, [
+                        {
+                            text: "Ok",
+                        },
+                        {
+                            text: "Voltar para login",
+                            onPress: () => handleTrocaForm(),
+                        }
+                    ])
+            }
         } catch (erro) {
-            console.log(erro)
+            Alert.alert("Erro", `Ocorreu um erro :(\n${erro}`)
         }
     }
 
