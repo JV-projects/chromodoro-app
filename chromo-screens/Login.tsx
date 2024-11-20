@@ -1,11 +1,11 @@
 import React from "react";
-
 import {useState} from "react";
-
 import {View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, Alert} from "react-native";
 import {post} from "@/service/api";
 import {UsuarioController} from "@/assets/endpoints/Endpoints";
 import {useNavigation} from "@react-navigation/native";
+import {guardarItem} from "@/service/localStorage";
+import Toast from 'react-native-root-toast';
 
 type Login = {
     handleTrocaForm: () => void
@@ -35,11 +35,14 @@ export default function Login({handleTrocaForm}: Login) {
 
             const data = resposta.data;
 
-            console.log(data)
+            console.log(data);
 
             if (resposta.status == 200) {
-                console.log("logou")
-                navigation.goBack()
+                await guardarItem(data, "token")
+                let toast = Toast.show(`Autenticado com sucesso!`, {
+                    duration: Toast.durations.LONG,
+                });
+                navigation.goBack();
             }
         } catch (erro) {
             Alert.alert("Erro", `Ocorreu um erro :(\n${erro}`)

@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, Alert} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet, Alert } from "react-native";
 import { post } from '@/service/api'
 import { RegistrarResponse } from "@/service/apiTypes"
 import { UsuarioController } from "@/assets/endpoints/Endpoints";
+import {guardarItem} from "@/service/localStorage";
 
 type Cadastro = {
     handleTrocaForm: () => void
@@ -33,6 +34,7 @@ export default function Cadastro({handleTrocaForm}: Cadastro) {
             const data = resposta.data;
 
             if (resposta.status == 200) {
+                await guardarItem(data, "usuario")
                 Alert.alert("Cadastro bem sucedido!",
                     `${data.nome}, seu cadastro com o email ${data.email} foi bem sucedido`, [
                         {
