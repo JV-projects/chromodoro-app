@@ -1,6 +1,11 @@
 import React from "react";
-import {View, StyleSheet, TouchableOpacity, Pressable, Text} from "react-native";
-import {Button} from "@rneui/themed";
+import { View, StyleSheet, TouchableOpacity, Pressable, Text } from "react-native";
+import { Button } from "@rneui/themed";
+
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+
+import { useEffect } from "react";
 
 export interface TarefaProps {
     titulo: string;
@@ -10,39 +15,62 @@ export interface TarefaProps {
     descricao: string;
 }
 
+interface TarefasArray {
+    tarefas: TarefaProps[]
+}
 
-export default function Tarefa({ titulo, totalCiclos, estCiclos, status, descricao } : TarefaProps) {
+
+export default function Tarefa({ tarefas }: TarefasArray) {
+
+
+    useEffect(() => {
+
+
+
+    }, [])
 
     return (
-        <Pressable style={styles.pressable}>
-            <View>
-                <View style={styles.spacing}>
-                    <Text style={styles.tituloTexto}>{titulo}</Text>
-                    <Text>{`${totalCiclos} / ${estCiclos}`}</Text>
-                </View>
-                <Text>{status}</Text>
-                <View style={styles.corpo}>
-                    <View style={styles.viewDesc}>
-                        <Text style={{fontSize: 13}}>{descricao}</Text>
+        <View style={{gap: 20}}>
+
+            <TouchableOpacity style={styles.pressNovaTarefa}>
+                <Ionicons name="add-circle-outline" size={24} color="black" />
+                <Text style={styles.pressText}>Nova tarefa</Text>
+            </TouchableOpacity>
+
+            {tarefas.map((tarefa, index) => (
+                <Pressable key={index} style={styles.pressable}>
+                    <View>
+                        <View style={styles.spacing}>
+                            <Text style={styles.tituloTexto}>{tarefa.titulo}</Text>
+                            <Text>{`${tarefa.totalCiclos} / ${tarefa.estCiclos}`}</Text>
+                        </View>
+                        <Text>{tarefa.status}</Text>
+                        <View style={styles.corpo}>
+                            <View style={styles.viewDesc}>
+                                <Text style={{ fontSize: 13 }}>{tarefa.descricao}</Text>
+                            </View>
+                            <View style={styles.viewBotao}>
+                                <Button title="Excluir" />
+                            </View>
+                        </View>
                     </View>
-                    <View style={styles.viewBotao}>
-                        <Button title={"Excluir"}/>
-                        <Button title={"Salvar"}/>
-                    </View>
-                </View>
-            </View>
-        </Pressable>
+                </Pressable>
+            ))}
+        </View>
     )
+
 }
 
 const styles = StyleSheet.create({
     pressable: {
         display: "flex",
-        backgroundColor: "white",
-        padding: 10,
-        borderColor: "#35404a",
+        backgroundColor: "#FCF2F0",
+        padding: 15,
+        borderColor: "#D1717B",
         borderWidth: 1,
         borderRadius: 8,
+        height: 200,
+        
     },
     spacing: {
         flexDirection: 'row',
@@ -62,5 +90,22 @@ const styles = StyleSheet.create({
     viewBotao: {
         flexDirection: 'row',
         alignSelf: 'flex-end'
+    },
+    pressNovaTarefa:{
+        width: '100%',
+        marginTop: 10,
+        height: 55,
+        borderWidth: 1,
+        borderColor: "#171717",
+        alignSelf: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        borderRadius: 8,
+        borderStyle: 'dashed'
+    },
+    pressText:{
+        fontSize: 16
     }
 })

@@ -2,12 +2,12 @@ import Button from "@/components/Button";
 import React, { useState, useRef, useEffect } from "react";
 import { useConfig } from "@/contexts/ConfigContext";
 
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable } from "react-native";
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Tarefa from "@/components/Tarefa";
 import { TarefaProps } from "@/components/Tarefa";
-import Tabs from "@/components/Tabs";
+import Projeto from "@/components/Projeto";
 
 
 interface Tempo {
@@ -31,6 +31,8 @@ interface Timer {
 }
 
 export default function Inicio() {
+
+    const [tab, setTab] = useState(0)
 
     const { configuracoes } = useConfig();
 
@@ -174,42 +176,66 @@ export default function Inicio() {
     ];
 
     return (
-        <ScrollView>
-            <View style={styles.viewInicio}>
 
-                <View style={styles.viewButtons}>
-                    <Button onPress={() => iniciarModo('pomodoro')} label="Pomodoro" isClicado={pomodoroAtivo} />
-                    <Button onPress={() => iniciarModo('pausaCurta')} label="Pausa curta" isClicado={pausaCurtaAtiva} />
-                    <Button onPress={() => iniciarModo('pausaLonga')} label="Pausa longa" isClicado={pausaLongaAtiva} />
+        <View style={{ flex: 1, backgroundColor: '#FCF2F0' }}>
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <View style={styles.viewInicio}>
+
+                    <View style={styles.viewButtons}>
+                        <Button onPress={() => iniciarModo('pomodoro')} label="Pomodoro" isClicado={pomodoroAtivo} />
+                        <Button onPress={() => iniciarModo('pausaCurta')} label="Pausa curta" isClicado={pausaCurtaAtiva} />
+                        <Button onPress={() => iniciarModo('pausaLonga')} label="Pausa longa" isClicado={pausaLongaAtiva} />
+                    </View>
+
+                    <View>
+                        <Text style={styles.mensagem}>{mensagem}</Text>
+                    </View>
+
+                    <View style={styles.timerView}>
+                        <Text style={styles.timerText}>{String(tempo.minutos).padStart(2, '0')}:{String(tempo.segundos).padStart(2, '0')}</Text>
+                    </View>
+
+                    <View>
+                        <TouchableOpacity onPress={trocarPlay}>
+                            {play ?
+                                (<MaterialCommunityIcons name="pause-circle-outline" size={80} color="#535353" />) :
+                                (<MaterialCommunityIcons name="play-circle-outline" size={80} color="#535353" />)}
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View>
-                    <Text style={styles.mensagem}>{mensagem}</Text>
-                </View>
+                <View style={{padding: 15}}>
 
-                <View style={styles.timerView}>
-                    <Text style={styles.timerText}>{String(tempo.minutos).padStart(2, '0')}:{String(tempo.segundos).padStart(2, '0')}</Text>
-                </View>
+                    <View style={styles.tabs}>
+                        <Pressable style={styles.pressable} onPress={() => setTab(0)}>
+                            <Text>Tarefas</Text>
+                        </Pressable>
+                        <Pressable style={styles.pressable} onPress={() => setTab(1)}>
+                            <Text>Projetos</Text>
+                        </Pressable>
+                    </View>
 
-                <View>
-                    <TouchableOpacity onPress={trocarPlay}>
-                        {play ?
-                            (<MaterialCommunityIcons name="pause-circle-outline" size={80} color="#535353" />) :
-                            (<MaterialCommunityIcons name="play-circle-outline" size={80} color="#535353" />)}
-                    </TouchableOpacity>
+                    <View>
+                        {tab === 0 && <Tarefa tarefas={tarefas}/> }
+                        {tab === 1 && <Projeto/>}
+                    </View>
+
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
 
     )
 }
 
 const styles = StyleSheet.create({
+    scrollView: {
+        flexGrow: 1,
+    },
     viewInicio: {
         padding: 18,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 30
+        gap: 50
     },
     viewButtons: {
         flexDirection: 'row',
@@ -218,7 +244,7 @@ const styles = StyleSheet.create({
     },
     mensagem: {
         color: "#D1717B",
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 600,
     },
     timerView: {
@@ -231,8 +257,19 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     timerText: {
-        fontSize: 40,
-        fontWeight: 500,
+        fontSize: 45,
+        fontWeight: 600,
         color: "#D1717B",
+    },
+    tabs:{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+        marginTop: 20
+    },
+    pressable:{
+        width: '50%',
+        alignItems: 'center'
     }
 })
