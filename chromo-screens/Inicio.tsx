@@ -5,6 +5,10 @@ import { useConfig } from "@/contexts/ConfigContext";
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Tarefa from "@/components/Tarefa";
+import { TarefaProps } from "@/components/Tarefa";
+import Tabs from "@/components/Tabs";
+
 
 interface Tempo {
     minutos: number,
@@ -137,6 +141,37 @@ export default function Inicio() {
     const trocarPlay = () => {
         setPlay(!play);
     };
+
+    const tarefas: TarefaProps[] = [
+        {
+            titulo: "Estudar TypeScript",
+            totalCiclos: 5,
+            estCiclos: 3,
+            status: "Em andamento",
+            descricao: "Revisar conceitos de tipos, interfaces, generics e módulos no TypeScript."
+        },
+        {
+            titulo: "Implementar API",
+            totalCiclos: 8,
+            estCiclos: 8,
+            status: "Concluída",
+            descricao: "Criar uma API RESTful com Node.js e Express, utilizando MongoDB para persistência."
+        },
+        {
+            titulo: "Reunião de equipe",
+            totalCiclos: 1,
+            estCiclos: 0,
+            status: "Em andamento",
+            descricao: "Reunião para discutir o progresso do projeto e as próximas etapas."
+        },
+        {
+            titulo: "Testar funcionalidades",
+            totalCiclos: 3,
+            estCiclos: 1,
+            status: "Em andamento",
+            descricao: "Testar todas as funcionalidades implementadas para garantir o funcionamento correto."
+        }
+    ];
 
     return (
         <ScrollView>
