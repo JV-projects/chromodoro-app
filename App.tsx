@@ -18,6 +18,7 @@ import Inicio from './chromo-screens/Inicio';
 import Configuracoes from './chromo-screens/Configuracoes';
 import Relatorio from './chromo-screens/Relatorio';
 import Conta from './chromo-screens/Conta';
+import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
 
@@ -28,78 +29,80 @@ export default function App() {
       <NavigationContainer>
         <SafeAreaProvider>
           <SafeAreaView style={styles.container}>
-            <ConfigProvider>
-              <Tab.Navigator
-                screenOptions={{
-                  tabBarHideOnKeyboard: true,
-                  headerShown: false,
-                  tabBarStyle: {
-                    backgroundColor: '#fff',
-                    height: 60,
-                  },
-                  tabBarActiveTintColor: 'white',
-                  tabBarInactiveTintColor: 'gray',
-                }}>
+            <AuthProvider>
+              <ConfigProvider>
+                <Tab.Navigator
+                  screenOptions={{
+                    tabBarHideOnKeyboard: true,
+                    headerShown: false,
+                    tabBarStyle: {
+                      backgroundColor: '#fff',
+                      height: 60,
+                    },
+                    tabBarActiveTintColor: 'white',
+                    tabBarInactiveTintColor: 'gray',
+                  }}>
 
-                <Tab.Screen
-                  name="Pomodoro"
-                  component={Inicio}
-                  options={{
-                    tabBarLabelStyle: {
-                      display: 'none',
-                    },
-                    tabBarIcon: ({ focused }) => {
-                      return (
-                        <MaterialCommunityIcons style={focused && styles.icon} name="timer-outline" size={28} color={focused ? "#fff" : "#535353"} />
-                      );
-                    },
-                  }}
-                />
+                  <Tab.Screen
+                    name="Pomodoro"
+                    component={Inicio}
+                    options={{
+                      tabBarLabelStyle: {
+                        display: 'none',
+                      },
+                      tabBarIcon: ({ focused }) => {
+                        return (
+                          <MaterialCommunityIcons style={focused && styles.icon} name="timer-outline" size={28} color={focused ? "#fff" : "#535353"} />
+                        );
+                      },
+                    }}
+                  />
 
-                <Tab.Screen
-                  name="Relatório"
-                  component={Relatorio}
-                  options={{
-                    tabBarLabelStyle: {
-                      display: 'none',
-                    },
-                    tabBarIcon: ({ focused }) => {
-                      return (
-                        <FontAwesome6 style={focused && styles.icon} name="chart-simple" size={28} color={focused ? "#fff" : "#535353"} />
-                      );
-                    },
-                  }}
-                />
-                <Tab.Screen
-                  name="Configurações"
-                  component={Configuracoes}
-                  options={{
-                    tabBarLabelStyle: {
-                      display: 'none',
-                    },
-                    tabBarIcon: ({ focused }) => {
-                      return (
-                        <Octicons style={focused && styles.icon} name="gear" size={28} color={focused ? "#fff" : "#535353"} />
-                      );
-                    },
-                  }}
-                />
-                <Tab.Screen
-                  name="Conta"
-                  component={Conta}
-                  options={{
-                    tabBarLabelStyle: {
-                      display: 'none',
-                    },
-                    tabBarIcon: ({ focused }) => {
-                      return (
-                        <MaterialIcons style={focused && styles.icon} name="account-circle" size={28} color={focused ? "#fff" : "#535353"} />
-                      );
-                    },
-                  }}
-                />
-              </Tab.Navigator>
-            </ConfigProvider>
+                  <Tab.Screen
+                    name="Relatório"
+                    component={Relatorio}
+                    options={{
+                      tabBarLabelStyle: {
+                        display: 'none',
+                      },
+                      tabBarIcon: ({ focused }) => {
+                        return (
+                          <FontAwesome6 style={focused && styles.icon} name="chart-simple" size={28} color={focused ? "#fff" : "#535353"} />
+                        );
+                      },
+                    }}
+                  />
+                  <Tab.Screen
+                    name="Configurações"
+                    component={Configuracoes}
+                    options={{
+                      tabBarLabelStyle: {
+                        display: 'none',
+                      },
+                      tabBarIcon: ({ focused }) => {
+                        return (
+                          <Octicons style={focused && styles.icon} name="gear" size={28} color={focused ? "#fff" : "#535353"} />
+                        );
+                      },
+                    }}
+                  />
+                  <Tab.Screen
+                    name="Conta"
+                    component={Conta}
+                    options={{
+                      tabBarLabelStyle: {
+                        display: 'none',
+                      },
+                      tabBarIcon: ({ focused }) => {
+                        return (
+                          <MaterialIcons style={focused && styles.icon} name="account-circle" size={28} color={focused ? "#fff" : "#535353"} />
+                        );
+                      },
+                    }}
+                  />
+                </Tab.Navigator>
+              </ConfigProvider>
+            </AuthProvider>
           </SafeAreaView>
         </SafeAreaProvider>
       </NavigationContainer>
