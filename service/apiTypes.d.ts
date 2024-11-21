@@ -14,3 +14,31 @@ export interface RegistrarResponse {
     "password": string,
     "username": string
 }
+
+export interface TarefaResponse {
+            "id": string,
+            "idUsuario": {
+                "id": string,
+                "nome": string,
+                "email": string,
+                "authorities": [
+                    {
+                        "authority": string
+                    }
+                ],
+                "username": string,
+                "password": string,
+                "enabled": boolean,
+                "accountNonExpired": boolean,
+                "accountNonLocked": boolean,
+                "credentialsNonExpired": boolean
+            },
+            "titulo": string,
+            "descricao": string,
+            "status": "Em andamento" | "Concluída",
+            "idProjeto": string | null,
+            "estCiclos": number,
+            "totalCiclos": number,
+            "totalTempo": null,
+            "totalPausa": null
+}
