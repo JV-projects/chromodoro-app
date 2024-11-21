@@ -8,6 +8,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Tarefa from "@/components/Tarefa";
 import { TarefaProps } from "@/components/Tarefa";
 import Projeto from "@/components/Projeto";
+import AuthMessage from "@/components/AuthMessage";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 interface Tempo {
@@ -31,6 +33,8 @@ interface Timer {
 }
 
 export default function Inicio() {
+
+    const { token, isAuthenticated } = useAuth()
 
     const [tab, setTab] = useState(0)
 
@@ -177,7 +181,7 @@ export default function Inicio() {
 
     return (
 
-        <View style={{ flex: 1, backgroundColor: '#FCF2F0' }}>
+        <View style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={styles.scrollView}>
                 <View style={styles.viewInicio}>
 
@@ -204,7 +208,7 @@ export default function Inicio() {
                     </View>
                 </View>
 
-                <View style={{padding: 15}}>
+                <View style={{ padding: 15 }}>
 
                     <View style={styles.tabs}>
                         <Pressable style={styles.pressable} onPress={() => setTab(0)}>
@@ -215,10 +219,14 @@ export default function Inicio() {
                         </Pressable>
                     </View>
 
-                    <View>
-                        {tab === 0 && <Tarefa tarefas={tarefas}/> }
-                        {tab === 1 && <Projeto/>}
-                    </View>
+                    {token && isAuthenticated ? (
+                        <View>
+                            {tab === 0 && <Tarefa tarefas={tarefas} />}
+                            {tab === 1 && <Projeto />}
+                        </View>
+                    ) : (
+                        <AuthMessage item="Tarefas e Projetos" />
+                    )}
 
                 </View>
             </ScrollView>
@@ -261,14 +269,14 @@ const styles = StyleSheet.create({
         fontWeight: 600,
         color: "#D1717B",
     },
-    tabs:{
+    tabs: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
         padding: 10,
         marginTop: 20
     },
-    pressable:{
+    pressable: {
         width: '50%',
         alignItems: 'center'
     }

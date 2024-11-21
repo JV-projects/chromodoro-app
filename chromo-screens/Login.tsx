@@ -6,6 +6,7 @@ import {UsuarioController} from "@/assets/endpoints/Endpoints";
 import {useNavigation} from "@react-navigation/native";
 import {guardarItem} from "@/service/localStorage";
 import Toast from 'react-native-root-toast';
+import { useAuth } from "@/contexts/AuthContext";
 
 type Login = {
     handleTrocaForm: () => void
@@ -19,6 +20,8 @@ interface FormLogin {
 export default function Login({handleTrocaForm}: Login) {
 
     const navigation = useNavigation()
+
+    const { token, setToken } = useAuth()
 
     const [focus, setFocus] = useState(false)
     const [formLogin, setFormLogin] = useState<FormLogin>({username: "", senha: ""})
@@ -39,10 +42,11 @@ export default function Login({handleTrocaForm}: Login) {
 
             if (resposta.status == 200) {
                 await guardarItem(data, "token")
+                setToken(data)
                 let toast = Toast.show(`Autenticado com sucesso!`, {
                     duration: Toast.durations.LONG,
                 });
-                navigation.goBack();
+                
             }
         } catch (erro) {
             Alert.alert("Erro", `Ocorreu um erro :(\n${erro}`)
