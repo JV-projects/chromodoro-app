@@ -9,3 +9,7 @@ export const UsuarioController = {
     registrar: `${API}usuario/registrar`
 }
 
+export const TarefaController = {
+    consultarTarefas: `${API}tarefas`
+}
+
