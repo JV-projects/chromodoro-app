@@ -34,119 +34,144 @@ interface Timer {
 
 export default function Inicio() {
 
-    const { token, isAuthenticated } = useAuth()
+        const { token, isAuthenticated } = useAuth()
 
-    const [tab, setTab] = useState(0)
+        const [tab, setTab] = useState(0)
 
-    const { configuracoes } = useConfig();
+        const { configuracoes } = useConfig();
 
-    //Estados do timer
-    const [pomodoroAtivo, setPomodoroAtivo] = useState(true);
-    const [pausaCurtaAtiva, setPausaCurtaAtiva] = useState(false);
-    const [pausaLongaAtiva, setPausaLongaAtiva] = useState(false);
+        //Estados do timer
+        const [pomodoroAtivo, setPomodoroAtivo] = useState(true);
+        const [pausaCurtaAtiva, setPausaCurtaAtiva] = useState(false);
+        const [pausaLongaAtiva, setPausaLongaAtiva] = useState(false);
 
-    const [play, setPlay] = useState(false)
+        const [ciclo, setCiclo] = useState(1)
 
-    const [mensagem, setMensagem] = useState("");
+        const [play, setPlay] = useState(false)
 
-    const [tempo, setTempo] = useState<Tempo>({ minutos: 0, segundos: 0 })
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+        const [mensagem, setMensagem] = useState("");
 
-    const timers = useRef<Timer>({
-        pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
-        pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
-        pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
-    })
+        const [tempo, setTempo] = useState<Tempo>({ minutos: 0, segundos: 0 })
+        const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const iniciarModo = (modo: "pomodoro" | "pausaCurta" | "pausaLonga") => {
-
-        // Reseta e pausa o timer
-        setPomodoroAtivo(false);
-        setPausaCurtaAtiva(false);
-        setPausaLongaAtiva(false);
-        setPlay(false);
-        clearInterval(intervalRef.current as NodeJS.Timeout);
-
-        // Mapeando cada estado
-        const modos = {
-            pomodoro: {
-                setAtivo: setPomodoroAtivo,
-                mensagem: "Hora do foco!",
-                tempo: timers.current.pomodoro,
-            },
-            pausaCurta: {
-                setAtivo: setPausaCurtaAtiva,
-                mensagem: "Hora da pausa...",
-                tempo: timers.current.pausaCurta,
-            },
-            pausaLonga: {
-                setAtivo: setPausaLongaAtiva,
-                mensagem: "Hora de uma boa pausa...",
-                tempo: timers.current.pausaLonga,
-            },
-        };
-
-        // Define o modo com base no parâmetro
-        const { setAtivo, mensagem, tempo } = modos[modo];
-        setAtivo(true);
-        setMensagem(mensagem);
-        setTempo({ minutos: tempo.minutos, segundos: 0 });
-    };
-
-    const iniciarTimer = () => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-        }
-
-        intervalRef.current = setInterval(() => {
-            setTempo(prevTempo => {
-
-                /* Se minutos e segundo forem === 0 */
-
-                if (prevTempo.minutos === 0 && prevTempo.segundos === 0) {
-                    clearInterval(intervalRef.current as NodeJS.Timeout);
-                    setMensagem("Tempo acabou!");
-                    return { minutos: 0, segundos: 0 };
-
-                    /* Se segundo forem === 0 reinicia a contagem de segundos*/
-                } else if (prevTempo.segundos === 0) {
-                    return { minutos: prevTempo.minutos - 1, segundos: 59 };
-
-                } else {
-
-                    return { minutos: prevTempo.minutos, segundos: prevTempo.segundos - 1 };
-                }
-            });
-        }, 1000);
-    };
-
-    useEffect(() => {
-        if (play) {
-            iniciarTimer();
-
-        } else if (intervalRef.current) {
-            clearInterval(intervalRef.current)
-        }
-
-        return () => clearInterval(intervalRef.current as NodeJS.Timeout);
-
-    }, [play, timers]);
-
-    // Atualiza o timer sempre que as configurações mudarem
-    useEffect(() => {
-        timers.current = {
+        const timers = useRef<Timer>({
             pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
             pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
             pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
+        })
+
+        const iniciarModo = (modo: "pomodoro" | "pausaCurta" | "pausaLonga") => {
+
+            // Reseta e pausa o timer
+            setPomodoroAtivo(false);
+            setPausaCurtaAtiva(false);
+            setPausaLongaAtiva(false);
+            setPlay(false);
+            clearInterval(intervalRef.current as NodeJS.Timeout);
+
+            // Mapeando cada estado
+            const modos = {
+                pomodoro: {
+                    setAtivo: setPomodoroAtivo,
+                    mensagem: "Hora do foco!",
+                    tempo: timers.current.pomodoro,
+                },
+                pausaCurta: {
+                    setAtivo: setPausaCurtaAtiva,
+                    mensagem: "Hora da pausa...",
+                    tempo: timers.current.pausaCurta,
+                },
+                pausaLonga: {
+                    setAtivo: setPausaLongaAtiva,
+                    mensagem: "Hora de uma boa pausa...",
+                    tempo: timers.current.pausaLonga,
+                },
+            };
+
+            // Define o modo com base no parâmetro
+            const { setAtivo, mensagem, tempo } = modos[modo];
+            setAtivo(true);
+            setMensagem(mensagem);
+            setTempo({ minutos: tempo.minutos, segundos: 0 });
         };
 
-        iniciarModo('pomodoro')
+        const iniciarTimer = () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
 
-    }, [configuracoes]);
+            intervalRef.current = setInterval(() => {
+                setTempo(prevTempo => {
 
-    const trocarPlay = () => {
-        setPlay(!play);
-    };
+                    /* Se minutos e segundo forem === 0 */
+
+                    if (prevTempo.minutos === 0 && prevTempo.segundos === 0) {
+                        clearInterval(intervalRef.current as NodeJS.Timeout);
+                        setMensagem("Tempo acabou!");
+
+                        alternarCiclo()
+
+                        return { minutos: 0, segundos: 0 };
+
+                        /* Se segundo forem === 0 reinicia a contagem de segundos*/
+                    } else if (prevTempo.segundos === 0) {
+                        return { minutos: prevTempo.minutos - 1, segundos: 59 };
+
+                    } else {
+
+                        return { minutos: prevTempo.minutos, segundos: prevTempo.segundos - 1 };
+                    }
+                });
+            }, 10);
+        };
+
+        useEffect(() => {
+            if (play) {
+                iniciarTimer();
+
+            } else if (intervalRef.current) {
+                clearInterval(intervalRef.current)
+            }
+
+            return () => clearInterval(intervalRef.current as NodeJS.Timeout);
+
+        }, [play, timers]);
+
+        // Atualiza o timer sempre que as configurações mudarem
+        useEffect(() => {
+            timers.current = {
+                pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
+                pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
+                pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
+            };
+
+            iniciarModo('pomodoro')
+
+        }, [configuracoes]);
+
+        const trocarPlay = () => {
+            setPlay(!play);
+        };
+
+        const alternarCiclo = () => {
+
+            if(pomodoroAtivo){
+
+                setCiclo(ciclo + 1)
+
+                if(ciclo % 4 === 0) {
+                    iniciarModo("pausaLonga")
+
+                } else {
+                    iniciarModo("pausaCurta")
+                }
+
+            }else{
+                iniciarModo('pomodoro')
+            
+            }
+
+        }
 
     const tarefas: TarefaProps[] = [
         {
@@ -212,10 +237,10 @@ export default function Inicio() {
 
                     <View style={styles.tabs}>
                         <Pressable style={styles.pressable} onPress={() => setTab(0)}>
-                            <Text>Tarefas</Text>
+                            <Text style={{fontWeight: 700, color: "#535353"}}>Tarefas</Text>
                         </Pressable>
                         <Pressable style={styles.pressable} onPress={() => setTab(1)}>
-                            <Text>Projetos</Text>
+                            <Text style={{fontWeight: 700, color: "#535353"}}>Projetos</Text>
                         </Pressable>
                     </View>
 
@@ -243,7 +268,7 @@ const styles = StyleSheet.create({
         padding: 18,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 50
+        gap: 50,
     },
     viewButtons: {
         flexDirection: 'row',
@@ -253,19 +278,19 @@ const styles = StyleSheet.create({
     mensagem: {
         color: "#D1717B",
         fontSize: 28,
-        fontWeight: 600,
+        fontWeight: 700,
     },
     timerView: {
         borderWidth: 2,
         borderColor: "#D1717B",
         borderRadius: "100%",
-        height: 250,
-        width: 250,
+        height: 280,
+        width: 280,
         justifyContent: 'center',
         alignItems: 'center'
     },
     timerText: {
-        fontSize: 45,
+        fontSize: 50,
         fontWeight: 600,
         color: "#D1717B",
     },
@@ -273,11 +298,14 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
-        padding: 10,
-        marginTop: 20
+        marginTop: 50,
+        borderBottomWidth: 2,
+        borderColor: '#D1717B'
     },
     pressable: {
         width: '50%',
-        alignItems: 'center'
+        padding: 10,
+        alignItems: 'center',
+
     }
 })
