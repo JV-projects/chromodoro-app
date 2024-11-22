@@ -12,7 +12,7 @@ interface Button {
 export default function Button({onPress, label, isClicado, children} : Button){
     return(
         <TouchableOpacity style={[styles.button, isClicado && styles.buttonClicado]}onPress={onPress}>
-            <Text style={isClicado && {color: "#fff", fontWeight: 600}}>{label}</Text>
+            <Text style={[{color: "#535353", fontWeight: 700}, isClicado && {color: "#fff", fontWeight: 700}]}>{label}</Text>
             {children}
         </TouchableOpacity>
     )

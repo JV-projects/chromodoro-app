@@ -37,8 +37,19 @@ export default function Tarefa({ tarefas }: TarefasArray) {
     }
 
     const salvarTarefa = async () => {
-
+        
     }
+
+    const statusColor = (status: string): string => {
+
+        const colors: { [key: string]: string } = {
+            "Concluída": "#A1FFB3",
+            "Em andamento": "#FFDEA1"
+        };
+    
+        return colors[status];
+    };
+
 
     return (
         <View style={{gap: 20}}>
@@ -64,15 +75,15 @@ export default function Tarefa({ tarefas }: TarefasArray) {
 
             {tarefas.map((tarefa, index) => (
                 <Pressable key={index} style={styles.pressable}>
-                    <View>
+                    <View style={{gap: 5}}>
                         <View style={styles.spacing}>
                             <Text style={styles.tituloTexto}>{tarefa.titulo}</Text>
                             <Text>{`${tarefa.totalCiclos} / ${tarefa.estCiclos}`}</Text>
                         </View>
-                        <Text>{tarefa.status}</Text>
+                        <Text style={[styles.status, {backgroundColor: statusColor(tarefa.status)}]}>{tarefa.status}</Text>
                         <View style={styles.corpo}>
                             <View style={styles.viewDesc}>
-                                <Text style={{fontSize: 13}}>{tarefa.descricao}</Text>
+                                <Text style={{fontSize: 13, color: "#535353"}}>{tarefa.descricao}</Text>
                             </View>
                             <View style={styles.viewBotao}>
                                 <Button
@@ -95,13 +106,11 @@ export default function Tarefa({ tarefas }: TarefasArray) {
 const styles = StyleSheet.create({
     pressable: {
         display: "flex",
-        backgroundColor: "#FCF2F0",
         padding: 15,
-        borderColor: "#D1717B",
+        borderColor: "rgba(0, 0, 0, 0.2)",
         borderWidth: 1,
         borderRadius: 8,
-        height: 200,
-
+        minHeight: 150,
     },
     spacing: {
         flexDirection: 'row',
@@ -109,14 +118,17 @@ const styles = StyleSheet.create({
     },
     tituloTexto: {
         fontSize: 18,
-        fontWeight: 700
+        color: "#535353",
+        fontWeight: 500
     },
     corpo: {
-        borderTopColor: '#35404a',
-        borderTopWidth: 0.5,
+        flexDirection: "row",
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     viewDesc: {
         marginVertical: 10,
+        width: '85%'
     },
     viewBotao: {
         flexDirection: 'row',
@@ -156,5 +168,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderWidth: 1,
         borderRadius: 5
+    },
+    status:{
+        color: "#171717", 
+        padding: 5, 
+        backgroundColor: "#E2E2E2", 
+        maxWidth: 130, 
+        borderRadius: 12, 
+        textAlign: 'center'
     }
 })

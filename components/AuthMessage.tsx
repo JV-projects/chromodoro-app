@@ -19,8 +19,9 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     texto: {
-        fontSize: 18,
-        fontWeight: 700,
+        fontSize: 16,
+        fontWeight: 600,
+        marginTop: 10,
         textAlign: 'center',
         color: 'gray'
     }
