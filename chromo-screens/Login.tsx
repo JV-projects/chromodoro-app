@@ -7,6 +7,7 @@ import {useNavigation} from "@react-navigation/native";
 import {guardarItem} from "@/service/localStorage";
 import Toast from 'react-native-root-toast';
 import { useAuth } from "@/contexts/AuthContext";
+import {LoginResponse} from "@/service/apiTypes";
 
 type Login = {
     handleTrocaForm: () => void
@@ -34,7 +35,7 @@ export default function Login({handleTrocaForm}: Login) {
     const onSubmit = async () => {
         console.log("onsubmit")
         try {
-            const resposta = await post<FormLogin, string>(formLogin, UsuarioController.login)
+            const resposta = await post<FormLogin, LoginResponse>(formLogin, UsuarioController.login)
 
             const data = resposta.data;
 
@@ -46,6 +47,7 @@ export default function Login({handleTrocaForm}: Login) {
                 await guardarItem(data, "usuarioAutenticado")
 
                 setToken(data.token)
+
                 let toast = Toast.show(`Autenticado com sucesso!`, {
                     duration: Toast.durations.LONG,
                 });
