@@ -52,6 +52,7 @@ export default function Inicio() {
         const [mensagem, setMensagem] = useState("");
 
         const [tempo, setTempo] = useState<Tempo>({ minutos: 0, segundos: 0 })
+        const [tempoRestante, setTempoRestante] = useState(0);
         const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
         const timers = useRef<Timer>({
@@ -92,50 +93,51 @@ export default function Inicio() {
             const { setAtivo, mensagem, tempo } = modos[modo];
             setAtivo(true);
             setMensagem(mensagem);
+
+            //0.1 gambiarra porque o timer iniciava a contagem de 58s
+            const msRestantes = (tempo.minutos * 60 + tempo.segundos + 0.1 ) * 1000;
+            setTempoRestante(msRestantes);
             setTempo({ minutos: tempo.minutos, segundos: 0 });
         };
 
-        const iniciarTimer = () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
+        const calcTimer = (distancia: number) => {
 
+            let minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distancia % (1000 * 60)) / 1000);
+        
+            return { minutos: minutes, segundos: seconds };
+          }
+        
+
+          const contagemTimer = () => {
+            const tempoFinal = new Date().getTime() + tempoRestante;
+        
+            setTempo(calcTimer(tempoRestante));
+        
             intervalRef.current = setInterval(() => {
-                setTempo(prevTempo => {
-
-                    /* Se minutos e segundo forem === 0 */
-
-                    if (prevTempo.minutos === 0 && prevTempo.segundos === 0) {
-                        clearInterval(intervalRef.current as NodeJS.Timeout);
-                        setMensagem("Tempo acabou!");
-
-                        alternarCiclo()
-
-                        return { minutos: 0, segundos: 0 };
-
-                        /* Se segundo forem === 0 reinicia a contagem de segundos*/
-                    } else if (prevTempo.segundos === 0) {
-                        return { minutos: prevTempo.minutos - 1, segundos: 59 };
-
-                    } else {
-
-                        return { minutos: prevTempo.minutos, segundos: prevTempo.segundos - 1 };
-                    }
-                });
-            }, 10);
+                const agora = new Date().getTime();
+                const distancia = tempoFinal - agora;
+        
+                if (distancia <= 0) {
+                    clearInterval(intervalRef.current as NodeJS.Timeout);
+                    setMensagem("Tempo acabou!");
+                    alternarCiclo();
+                } else {
+                    setTempo(calcTimer(distancia));
+                    setTempoRestante(distancia);
+                }
+            }, 1000);
         };
 
         useEffect(() => {
             if (play) {
-                iniciarTimer();
+                contagemTimer();
 
             } else if (intervalRef.current) {
                 clearInterval(intervalRef.current)
             }
 
-            return () => clearInterval(intervalRef.current as NodeJS.Timeout);
-
-        }, [play, timers]);
+        }, [play]);
 
         // Atualiza o timer sempre que as configurações mudarem
         useEffect(() => {
