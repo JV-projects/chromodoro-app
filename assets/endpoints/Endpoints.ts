@@ -12,6 +12,10 @@ export const UsuarioController = {
 export const TarefaController = {
     consultarTarefas: (email: string) => {
         return `${API}tarefas?email=${email}`
-    }
+    },
+    salvarTarefa: (email: string) => {
+        return `${API}tarefas?email=${email}`
+    },
+    deletarTarefa: `${API}tarefas`
 }
 
