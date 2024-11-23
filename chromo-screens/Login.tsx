@@ -41,8 +41,11 @@ export default function Login({handleTrocaForm}: Login) {
             console.log(data);
 
             if (resposta.status == 200) {
-                await guardarItem(data, "token")
-                setToken(data)
+
+                await guardarItem(data.token, "token")
+                await guardarItem(data, "usuarioAutenticado")
+
+                setToken(data.token)
                 let toast = Toast.show(`Autenticado com sucesso!`, {
                     duration: Toast.durations.LONG,
                 });

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, Children } from "react";
-import { lerItem } from "@/service/localStorage";
+import { lerItem, removerItem } from "@/service/localStorage";
 
 interface AuthContextData {
     token: string | null;
@@ -23,8 +23,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         carregar()
     })
 
+    const logout = () => {
+        setToken(null);
+        removerItem("usuarioAutenticado");
+        removerItem("token");
+    };
+
     return (
-        <AuthContext.Provider value={{ token, setToken, isAuthenticated}}>
+        <AuthContext.Provider value={{ token, setToken, isAuthenticated, logout}}>
             { children }
         </AuthContext.Provider>
     )

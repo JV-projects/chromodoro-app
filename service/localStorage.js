@@ -14,7 +14,7 @@ export const guardarItem = async (data, key) => {
         await AsyncStorage.setItem(key, dataString);
 
     } catch (e) {
-        console.log("Erro ao guardar configurações")
+        console.log("Erro ao guardar item")
     }
 
 }
@@ -30,7 +30,17 @@ export const lerItem = async (key) => {
         return data != null ? JSON.parse(data) : null;
 
     } catch (e) {
-        console.log("Erro ao pegar configurações")
+        console.log("Erro ao pegar item")
+    }
+
+}
+
+export const removerItem = async (key) => {
+
+    try{
+        AsyncStorage.removeItem(key)
+    }catch(e){
+        console.log("Erro ao remover item")
     }
 
 }
