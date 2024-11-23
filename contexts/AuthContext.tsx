@@ -2,15 +2,16 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, Child
 import { lerItem, removerItem } from "@/service/localStorage";
 
 interface AuthContextData {
-    token: string | null;
-    setToken: React.Dispatch<React.SetStateAction<string>>;
+    token?: string;
+    setToken: React.Dispatch<React.SetStateAction<string | undefined>>;
     isAuthenticated: boolean
+    logout: () => void
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [token, setToken] = useState<string | null>(null)
+    const [token, setToken] = useState<string>()
 
     const isAuthenticated = token !== null;
 
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
 
     const logout = () => {
-        setToken(null);
+        setToken(undefined);
         removerItem("usuarioAutenticado");
         removerItem("token");
     };
