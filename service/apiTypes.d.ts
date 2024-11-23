@@ -15,6 +15,12 @@ export interface RegistrarResponse {
     "username": string
 }
 
+export interface LoginResponse {
+    nome: string;
+    username: string;
+    token: string;
+}
+
 export interface TarefaResponse {
             "id": string,
             "idUsuario": {
