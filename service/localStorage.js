@@ -25,7 +25,7 @@ export const lerItem = async (key) => {
 
         const data = await AsyncStorage.getItem(key)
 
-        console.log("Pegou" + data)
+        //console.log("Pegou" + data)
 
         return data != null ? JSON.parse(data) : null;
 
