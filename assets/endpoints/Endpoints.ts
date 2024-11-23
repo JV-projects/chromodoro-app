@@ -10,6 +10,8 @@ export const UsuarioController = {
 }
 
 export const TarefaController = {
-    consultarTarefas: `${API}tarefas`
+    consultarTarefas: (email: string) => {
+        return `${API}tarefas?email=${email}`
+    }
 }
 

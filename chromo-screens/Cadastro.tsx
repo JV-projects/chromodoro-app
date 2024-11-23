@@ -34,7 +34,6 @@ export default function Cadastro({handleTrocaForm}: Cadastro) {
             const data = resposta.data;
 
             if (resposta.status == 200) {
-                await guardarItem(data, "usuario")
                 Alert.alert("Cadastro bem sucedido!",
                     `${data.nome}, seu cadastro com o email ${data.email} foi bem sucedido`, [
                         {

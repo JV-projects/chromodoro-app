@@ -7,37 +7,72 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {useEffect} from "react";
 import {Icon} from "@rneui/base";
+import {lerItem} from "@/service/localStorage";
+import {get, post} from "@/service/api";
+import {TarefaResponse} from "@/service/apiTypes";
+import {TarefaController} from "@/assets/endpoints/Endpoints";
+import Toast from "react-native-root-toast";
 
-export interface Tarefa {
+export interface TarefaForm {
     titulo: string;
     estCiclos: number;
     descricao: string;
 }
 
-export interface TarefaProps extends Tarefa {
+export interface TarefaProps extends TarefaForm {
     totalCiclos: number;
     status: "Em andamento" | "Concluída"
 }
 
 interface TarefasArray {
-    tarefas: TarefaProps[]
+    tarefas: TarefaResponse[]
 }
 
 
-export default function Tarefa({ tarefas }: TarefasArray) {
+export default function Tarefa() {
 
     const [exibeForm, setExibeForm] = useState<boolean>(false);
-    const [formTarefa, setFormTarefa] = useState<Tarefa>({ titulo: "", estCiclos: 0, descricao: "" })
+    const [formTarefa, setFormTarefa] = useState<TarefaForm>({ titulo: "", estCiclos: 0, descricao: "" })
+    const [listaTarefas, setListaTarefas] = useState<TarefaResponse[]>([])
+
+
+
+    useEffect(() => {
+        const carregarTarefas = async () => {
+            const token = await lerItem("token")
+
+            const email = await lerItem("email")
+
+            try {
+                const resposta = await get<TarefaResponse[]>(token, TarefaController.consultarTarefas(email))
+
+                const data = resposta.data
+
+                if (resposta.status == 200) {
+                    setListaTarefas(data)
+                }
+            } catch (erro) {
+                let toast = Toast.show(`Erro ao carregar: ${erro}`, {
+                    duration: Toast.durations.LONG
+                })
+            }
+        }
+        carregarTarefas()
+    }, [])
 
     console.log(formTarefa)
 
-    const getData = (texto: string, prop: keyof Tarefa) => {
+    const getData = (texto: string, prop: keyof TarefaForm) => {
 
         setFormTarefa((prevState) => ({...prevState, [prop]: texto}));
     }
 
     const salvarTarefa = async () => {
-        
+
+    }
+
+    const deletarTarefa = async () => {
+
     }
 
     const statusColor = (status: string): string => {
@@ -73,7 +108,7 @@ export default function Tarefa({ tarefas }: TarefasArray) {
                 </View>
             )}
 
-            {tarefas.map((tarefa, index) => (
+            {listaTarefas.map((tarefa, index) => (
                 <Pressable key={index} style={styles.pressable}>
                     <View style={{gap: 5}}>
                         <View style={styles.spacing}>
