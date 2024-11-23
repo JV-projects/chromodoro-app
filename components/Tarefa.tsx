@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
-        borderRadius: 8,
+
         borderStyle: 'dashed'
     },
     pressText: {
@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
     },
     novaTarefa: {
         display: "flex",
-        backgroundColor: "#FCF2F0",
-        borderColor: "#D1717B",
         padding: 15,
+        borderColor: "rgba(0, 0, 0, 0.2)",
         borderWidth: 1,
         borderRadius: 8,
+        minHeight: 150,
         gap: 10
     },
     inputContainer: {
@@ -165,9 +165,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     input: {
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderRadius: 5
+        width: '100%',
+        height: 50,
+        padding: 10,
+        backgroundColor: "#ececec",
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.2)',
+        borderWidth: 1
     },
     status:{
         color: "#171717", 

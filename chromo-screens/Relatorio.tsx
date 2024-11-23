@@ -2,7 +2,8 @@
 import AuthMessage from "@/components/AuthMessage";
 import TituloIcone from "@/components/TituloIcone";
 import { useAuth } from "@/contexts/AuthContext";
-import React from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 
 import { Text, View, StyleSheet, } from "react-native";
 
@@ -25,29 +26,29 @@ export default function Relatório() {
             <TituloIcone titulo="ACÚMULO DE TEMPO" icone="timer-outline" />
 
             <View style={styles.card}>
-                <Text style={{ fontSize: 15, color: "#535353", fontWeight: '500' }}>Pomodoro</Text>
-                <Text style={{ fontSize: 28, color: "#535353", fontWeight: '400' }}>00:00:00</Text>
+                <Text style={styles.texto}>Pomodoro</Text>
+                <Text style={styles.horasTexto}>00:00:00</Text>
             </View>
 
             <View style={styles.card}>
-                <Text style={{ fontSize: 15, color: "#535353", fontWeight: '500' }}>Pausa Curta</Text>
-                <Text style={{ fontSize: 28, color: "#535353", fontWeight: '400' }}>00:00:00</Text>
+                <Text style={styles.texto}>Pausa Curta</Text>
+                <Text style={styles.horasTexto}>00:00:00</Text>
             </View>
 
             <View style={styles.card}>
-                <Text style={{ fontSize: 15, color: "#535353", fontWeight: '500' }}>Pausa Longa</Text>
-                <Text style={{ fontSize: 28, color: "#535353", fontWeight: '400' }}>00:00:00</Text>
+                <Text style={styles.texto}>Pausa Longa</Text>
+                <Text style={styles.horasTexto}>00:00:00</Text>
             </View>
 
             <TituloIcone titulo="TAREFAS" icone="pin-outline" />
 
             {isAuthenticated ? (
                 <View style={[styles.card, { flexDirection: 'row', alignItems: 'center' }]}>
-                    <Text style={{ fontSize: 15, color: "#535353", fontWeight: '500' }}>Concluídas</Text>
-                    <Text style={{ fontSize: 28, color: "#535353", fontWeight: '400' }}>30</Text>
+                    <Text style={styles.texto}>Concluídas</Text>
+                    <Text style={styles.horasTexto}>30</Text>
                 </View>
             ) : (
-                <AuthMessage item="o relatório de Tarefas concluídas"/>
+                <AuthMessage item="o relatório de Tarefas concluídas" />
             )}
 
         </View>
@@ -74,4 +75,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         gap: 10
     },
+    texto: {
+        fontSize: 15,
+        color: "#535353",
+        fontWeight: '500'
+    },
+    horasTexto: {
+        fontSize: 28,
+        color: "#535353",
+        fontWeight: '400'
+    }
 })
