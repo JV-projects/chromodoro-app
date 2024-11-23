@@ -10,6 +10,7 @@ import { TarefaProps } from "@/components/Tarefa";
 import Projeto from "@/components/Projeto";
 import AuthMessage from "@/components/AuthMessage";
 import { useAuth } from "@/contexts/AuthContext";
+import { guardarItem, lerItem } from "@/service/localStorage";
 
 
 interface Tempo {
@@ -34,146 +35,188 @@ interface Timer {
 
 export default function Inicio() {
 
-        const { token, isAuthenticated } = useAuth()
+    const { token, isAuthenticated } = useAuth()
 
-        const [tab, setTab] = useState(0)
+    const [tab, setTab] = useState(0)
 
-        const { configuracoes } = useConfig();
+    const { configuracoes } = useConfig();
 
-        //Estados do timer
-        const [pomodoroAtivo, setPomodoroAtivo] = useState(true);
-        const [pausaCurtaAtiva, setPausaCurtaAtiva] = useState(false);
-        const [pausaLongaAtiva, setPausaLongaAtiva] = useState(false);
+    //Estados do timer
+    const [pomodoroAtivo, setPomodoroAtivo] = useState(true);
+    const [pausaCurtaAtiva, setPausaCurtaAtiva] = useState(false);
+    const [pausaLongaAtiva, setPausaLongaAtiva] = useState(false);
 
-        const [ciclo, setCiclo] = useState(1)
+    const [ciclo, setCiclo] = useState(1)
 
-        const [play, setPlay] = useState(false)
+    const [play, setPlay] = useState(false)
 
-        const [mensagem, setMensagem] = useState("");
+    const [mensagem, setMensagem] = useState("");
 
-        const [tempo, setTempo] = useState<Tempo>({ minutos: 0, segundos: 0 })
-        const [tempoRestante, setTempoRestante] = useState(0);
-        const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [tempo, setTempo] = useState<Tempo>({ minutos: 0, segundos: 0 })
+    const [tempoRestante, setTempoRestante] = useState(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-        const timers = useRef<Timer>({
+    const timers = useRef<Timer>({
+        pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
+        pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
+        pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
+    })
+
+    const iniciarModo = (modo: "pomodoro" | "pausaCurta" | "pausaLonga") => {
+
+        // Reseta e pausa o timer
+        setPomodoroAtivo(false);
+        setPausaCurtaAtiva(false);
+        setPausaLongaAtiva(false);
+        setPlay(false);
+        clearInterval(intervalRef.current as NodeJS.Timeout);
+
+        // Mapeando cada estado
+        const modos = {
+            pomodoro: {
+                setAtivo: setPomodoroAtivo,
+                mensagem: "Hora do foco!",
+                tempo: timers.current.pomodoro,
+            },
+            pausaCurta: {
+                setAtivo: setPausaCurtaAtiva,
+                mensagem: "Hora da pausa...",
+                tempo: timers.current.pausaCurta,
+            },
+            pausaLonga: {
+                setAtivo: setPausaLongaAtiva,
+                mensagem: "Hora de uma boa pausa...",
+                tempo: timers.current.pausaLonga,
+            },
+        };
+
+        // Define o modo com base no parâmetro
+        const { setAtivo, mensagem, tempo } = modos[modo];
+        setAtivo(true);
+        setMensagem(mensagem);
+
+        //0.1 gambiarra porque o timer iniciava a contagem de 58s
+        const msRestantes = (tempo.minutos * 60 + tempo.segundos + 0.1) * 1000;
+        setTempoRestante(msRestantes);
+        setTempo({ minutos: tempo.minutos, segundos: 0 });
+    };
+
+    const calcTimer = (distancia: number) => {
+
+        let minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distancia % (1000 * 60)) / 1000);
+
+        return { minutos: minutes, segundos: seconds };
+    }
+
+
+    const contagemTimer = () => {
+        const tempoFinal = new Date().getTime() + tempoRestante;
+
+        setTempo(calcTimer(tempoRestante));
+
+        intervalRef.current = setInterval(() => {
+            const agora = new Date().getTime();
+            const distancia = tempoFinal - agora;
+
+            if (distancia <= 0) {
+                clearInterval(intervalRef.current as NodeJS.Timeout);
+                setMensagem("Tempo acabou!");
+                alternarCiclo();
+            } else {
+                setTempo(calcTimer(distancia));
+                setTempoRestante(distancia);
+            }
+        }, 1000);
+    };
+
+    const salvarHoras = async () => {
+
+        let relatorio = {
+            pomodoro: 0,
+            pausaCurta: 0,
+            pausaLonga: 0
+        }
+
+        // Pegando o relatório da local storage
+        const relatorioStorage = await lerItem('relatorio')
+        if (relatorioStorage) {
+            relatorio = relatorioStorage
+        }
+
+        //Pegando o current do timers
+        const {pomodoro, pausaCurta, pausaLonga} = timers.current
+
+        // Verificando e atualizando valores
+        const tempoEmMs = (tempo.minutos * 60 + tempo.segundos) * 1000;
+
+        if (pomodoroAtivo) {
+
+            const timerEmMs = (pomodoro.minutos * 60 + pomodoro.segundos) * 1000;
+            relatorio.pomodoro +=  (timerEmMs - tempoEmMs);
+
+        } else if (pausaCurtaAtiva) {
+
+            const timerEmMs = (pausaCurta.minutos * 60 + pausaCurta.segundos) * 1000;
+            relatorio.pausaCurta += (timerEmMs - tempoEmMs);
+
+        } else if (pausaLongaAtiva) {
+
+            const timerEmMs = (pausaLonga.minutos * 60 + pausaLonga.segundos) * 1000;
+            relatorio.pausaLonga += (timerEmMs - tempoEmMs);
+        }
+
+        // Salvando de novo
+        await guardarItem(relatorio, 'relatorio');
+    }
+
+    useEffect(() => {
+
+        if (play) {
+            contagemTimer();
+
+        } else if (intervalRef.current) {
+            salvarHoras()
+            clearInterval(intervalRef.current)
+        }
+
+    }, [play]);
+
+    // Atualiza o timer sempre que as configurações mudarem
+    useEffect(() => {
+        timers.current = {
             pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
             pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
             pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
-        })
-
-        const iniciarModo = (modo: "pomodoro" | "pausaCurta" | "pausaLonga") => {
-
-            // Reseta e pausa o timer
-            setPomodoroAtivo(false);
-            setPausaCurtaAtiva(false);
-            setPausaLongaAtiva(false);
-            setPlay(false);
-            clearInterval(intervalRef.current as NodeJS.Timeout);
-
-            // Mapeando cada estado
-            const modos = {
-                pomodoro: {
-                    setAtivo: setPomodoroAtivo,
-                    mensagem: "Hora do foco!",
-                    tempo: timers.current.pomodoro,
-                },
-                pausaCurta: {
-                    setAtivo: setPausaCurtaAtiva,
-                    mensagem: "Hora da pausa...",
-                    tempo: timers.current.pausaCurta,
-                },
-                pausaLonga: {
-                    setAtivo: setPausaLongaAtiva,
-                    mensagem: "Hora de uma boa pausa...",
-                    tempo: timers.current.pausaLonga,
-                },
-            };
-
-            // Define o modo com base no parâmetro
-            const { setAtivo, mensagem, tempo } = modos[modo];
-            setAtivo(true);
-            setMensagem(mensagem);
-
-            //0.1 gambiarra porque o timer iniciava a contagem de 58s
-            const msRestantes = (tempo.minutos * 60 + tempo.segundos + 0.1 ) * 1000;
-            setTempoRestante(msRestantes);
-            setTempo({ minutos: tempo.minutos, segundos: 0 });
         };
 
-        const calcTimer = (distancia: number) => {
+        iniciarModo('pomodoro')
 
-            let minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((distancia % (1000 * 60)) / 1000);
-        
-            return { minutos: minutes, segundos: seconds };
-          }
-        
+    }, [configuracoes]);
 
-          const contagemTimer = () => {
-            const tempoFinal = new Date().getTime() + tempoRestante;
-        
-            setTempo(calcTimer(tempoRestante));
-        
-            intervalRef.current = setInterval(() => {
-                const agora = new Date().getTime();
-                const distancia = tempoFinal - agora;
-        
-                if (distancia <= 0) {
-                    clearInterval(intervalRef.current as NodeJS.Timeout);
-                    setMensagem("Tempo acabou!");
-                    alternarCiclo();
-                } else {
-                    setTempo(calcTimer(distancia));
-                    setTempoRestante(distancia);
-                }
-            }, 1000);
-        };
+    const trocarPlay = () => {
+        setPlay(!play);
+    };
 
-        useEffect(() => {
-            if (play) {
-                contagemTimer();
+    const alternarCiclo = () => {
 
-            } else if (intervalRef.current) {
-                clearInterval(intervalRef.current)
+        if (pomodoroAtivo) {
+
+            setCiclo(ciclo + 1)
+
+            if (ciclo % 4 === 0) {
+                iniciarModo("pausaLonga")
+
+            } else {
+                iniciarModo("pausaCurta")
             }
 
-        }, [play]);
-
-        // Atualiza o timer sempre que as configurações mudarem
-        useEffect(() => {
-            timers.current = {
-                pomodoro: { minutos: Number(configuracoes.pomodoro.minutos), segundos: 0 },
-                pausaCurta: { minutos: Number(configuracoes.pausaCurta.minutos), segundos: 0 },
-                pausaLonga: { minutos: Number(configuracoes.pausaLonga.minutos), segundos: 0 },
-            };
-
+        } else {
             iniciarModo('pomodoro')
 
-        }, [configuracoes]);
-
-        const trocarPlay = () => {
-            setPlay(!play);
-        };
-
-        const alternarCiclo = () => {
-
-            if(pomodoroAtivo){
-
-                setCiclo(ciclo + 1)
-
-                if(ciclo % 4 === 0) {
-                    iniciarModo("pausaLonga")
-
-                } else {
-                    iniciarModo("pausaCurta")
-                }
-
-            }else{
-                iniciarModo('pomodoro')
-            
-            }
-
         }
+
+    }
 
     const tarefas: TarefaProps[] = [
         {
@@ -239,10 +282,10 @@ export default function Inicio() {
 
                     <View style={styles.tabs}>
                         <Pressable style={styles.pressable} onPress={() => setTab(0)}>
-                            <Text style={{fontWeight: 700, color: "#535353"}}>Tarefas</Text>
+                            <Text style={{ fontWeight: 700, color: "#535353" }}>Tarefas</Text>
                         </Pressable>
                         <Pressable style={styles.pressable} onPress={() => setTab(1)}>
-                            <Text style={{fontWeight: 700, color: "#535353"}}>Projetos</Text>
+                            <Text style={{ fontWeight: 700, color: "#535353" }}>Projetos</Text>
                         </Pressable>
                     </View>
 

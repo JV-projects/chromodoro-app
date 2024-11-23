@@ -3,20 +3,50 @@ import AuthMessage from "@/components/AuthMessage";
 import TituloIcone from "@/components/TituloIcone";
 import { useAuth } from "@/contexts/AuthContext";
 import React, { useState, useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+
+import { useFocusEffect } from '@react-navigation/native'
 
 import { Text, View, StyleSheet, } from "react-native";
+import { lerItem } from "@/service/localStorage";
 
 interface Relatorio {
-    pomodoroTempo: string,
+    pomodoro: string,
     pausaCurta: string,
     pausaLonga: string,
-    tarefas: number
 }
 
 export default function Relatório() {
 
     const { isAuthenticated } = useAuth()
+
+    const [relatorio, setRelatorio] = useState<Relatorio>({ pomodoro: "0", pausaCurta: "0", pausaLonga: "0" })
+
+    useFocusEffect(
+        useCallback(() => {
+
+            const carregarRelatorio = async () => {
+                const relatorioStorage = await lerItem('relatorio');
+                if (relatorioStorage) {
+                    setRelatorio({
+                        pomodoro: formatarTempo(relatorioStorage.pomodoro),
+                        pausaCurta: formatarTempo(relatorioStorage.pausaCurta),
+                        pausaLonga: formatarTempo(relatorioStorage.pausaLonga)
+                    });
+                }
+            }
+            carregarRelatorio();
+
+
+        }, []))
+
+    const formatarTempo = (tempo: number) : string => {
+
+        const horas = Math.floor(tempo / (1000 * 60 * 60));
+        const minutos = Math.floor((tempo % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((tempo % (1000 * 60)) / 1000);
+
+        return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+    }
 
     return (
         <View style={styles.containerRelatorio}>
@@ -27,17 +57,17 @@ export default function Relatório() {
 
             <View style={styles.card}>
                 <Text style={styles.texto}>Pomodoro</Text>
-                <Text style={styles.horasTexto}>00:00:00</Text>
+                <Text style={styles.horasTexto}>{relatorio.pomodoro}</Text>
             </View>
 
             <View style={styles.card}>
                 <Text style={styles.texto}>Pausa Curta</Text>
-                <Text style={styles.horasTexto}>00:00:00</Text>
+                <Text style={styles.horasTexto}>{relatorio.pausaCurta}</Text>
             </View>
 
             <View style={styles.card}>
                 <Text style={styles.texto}>Pausa Longa</Text>
-                <Text style={styles.horasTexto}>00:00:00</Text>
+                <Text style={styles.horasTexto}>{relatorio.pausaLonga}</Text>
             </View>
 
             <TituloIcone titulo="TAREFAS" icone="pin-outline" />
