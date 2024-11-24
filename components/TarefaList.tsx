@@ -115,7 +115,7 @@ export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exi
                     <View style={{gap: 5}}>
                         <View style={styles.spacing}>
                             <Text style={styles.tituloTexto}>{tarefa.titulo}</Text>
-                            <Text>{`${tarefa.estCiclos} / ${tarefa.totalCiclos}`}</Text>
+                            <Text>{`${tarefa.totalCiclos}/${tarefa.estCiclos} `}</Text>
                         </View>
                         <Text
                             style={[styles.status, {backgroundColor: statusColor(tarefa.status)}]}>{tarefa.status}</Text>

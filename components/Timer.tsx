@@ -229,7 +229,13 @@ export default function Timer(){
                     style={styles.timerText}>{String(tempo.minutos).padStart(2, '0')}:{String(tempo.segundos).padStart(2, '0')}</Text>
             </View>
 
+
+
+            <View style={{alignItems: 'center', gap: 10}}>
+
             <View>
+                <Text style={{fontSize: 22}}>#{ciclo}</Text>
+            </View>
                 <TouchableOpacity onPress={trocarPlay}>
                     {play ?
                         (<MaterialCommunityIcons name="pause-circle-outline" size={80} color="#535353"/>) :
@@ -249,7 +255,7 @@ const styles = StyleSheet.create({
         padding: 18,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 50,
+        gap: 42,
     },
     viewButtons: {
         flexDirection: 'row',

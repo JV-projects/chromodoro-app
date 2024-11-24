@@ -1,24 +1,24 @@
-import React, {useCallback, useEffect, useState} from "react";
-import {Text, View, StyleSheet, ScrollView, Pressable} from "react-native";
-import TarefaList, {TarefaForm} from "@/components/TarefaList";
+import React, { useCallback, useEffect, useState } from "react";
+import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import TarefaList, { TarefaForm } from "@/components/TarefaList";
 import Projeto from "@/components/Projeto";
 import AuthMessage from "@/components/AuthMessage";
-import {useAuth} from "@/contexts/AuthContext";
-import {lerItem} from "@/service/localStorage";
-import {LoginResponse, TarefaResponse} from "@/service/apiTypes";
-import {Tarefa} from "@/components/TarefaList"
-import {TarefaController} from "@/assets/endpoints/Endpoints";
-import {atualizar, deletar, get, post} from "@/service/api";
+import { useAuth } from "@/contexts/AuthContext";
+import { lerItem } from "@/service/localStorage";
+import { LoginResponse, TarefaResponse } from "@/service/apiTypes";
+import { Tarefa } from "@/components/TarefaList"
+import { TarefaController } from "@/assets/endpoints/Endpoints";
+import { atualizar, deletar, get, post } from "@/service/api";
 import Toast from "react-native-root-toast";
 import Timer from "@/components/Timer"
-import {useCiclo} from "@/contexts/CicloContext";
+import { useCiclo } from "@/contexts/CicloContext";
 
 
 export default function Inicio() {
 
-    const {ciclo} = useCiclo()
+    const { ciclo } = useCiclo()
 
-    const {token, isAuthenticated} = useAuth()
+    const { token, isAuthenticated } = useAuth()
 
     const [tab, setTab] = useState(0)
 
@@ -118,49 +118,51 @@ export default function Inicio() {
         carregarTarefas()
     }, [])
 
-
     useEffect(() => {
+
+        console.log("Ciclo mudou")
+
         if (tarefaSelecionada.id) {
+            
             setTarefaSelecionada(prevTarefa => ({
                 ...prevTarefa,
-                totalCiclos: ciclo
+                totalCiclos: ciclo, 
             }));
 
             atualizarTarefa();
         }
-    }, [ciclo])
-
+    }, [ciclo]);
 
     return (
 
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={styles.scrollView}>
 
-                <Timer/>
+                <Timer />
 
-                <View style={{padding: 15}}>
+                <View style={{ padding: 15 }}>
 
                     <View style={styles.tabs}>
                         <Pressable style={styles.pressable} onPress={() => setTab(0)}>
-                            <Text style={{fontWeight: 700, color: "#535353"}}>Tarefas</Text>
+                            <Text style={{ fontWeight: 700, color: "#535353" }}>Tarefas</Text>
                         </Pressable>
                         <Pressable style={styles.pressable} onPress={() => setTab(1)}>
-                            <Text style={{fontWeight: 700, color: "#535353"}}>Projetos</Text>
+                            <Text style={{ fontWeight: 700, color: "#535353" }}>Projetos</Text>
                         </Pressable>
                     </View>
 
                     {token && isAuthenticated ? (
                         <View>
                             {tab === 0 && <TarefaList tarefaSelecionada={tarefaSelecionada}
-                                                      setTarefaSelecionada={setTarefaSelecionada}
-                                                      exibeForm={exibeForm} setExibeForm={setExibeForm}
-                                                      setFormTarefa={setFormTarefa}
-                                                      listaTarefas={listaTarefas} salvarTarefa={salvarTarefa}
-                                                      deletarTarefa={deletarTarefa}/>}
-                            {tab === 1 && <Projeto/>}
+                                setTarefaSelecionada={setTarefaSelecionada}
+                                exibeForm={exibeForm} setExibeForm={setExibeForm}
+                                setFormTarefa={setFormTarefa}
+                                listaTarefas={listaTarefas} salvarTarefa={salvarTarefa}
+                                deletarTarefa={deletarTarefa} />}
+                            {tab === 1 && <Projeto />}
                         </View>
                     ) : (
-                        <AuthMessage item="Tarefas e Projetos"/>
+                        <AuthMessage item="Tarefas e Projetos" />
                     )}
 
                 </View>
