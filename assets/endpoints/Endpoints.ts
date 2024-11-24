@@ -16,6 +16,7 @@ export const TarefaController = {
     salvarTarefa: (email: string) => {
         return `${API}tarefas?email=${email}`
     },
+    atualizarTarefa: `${API}tarefas`,
     deletarTarefa: `${API}tarefas`
 }
 
