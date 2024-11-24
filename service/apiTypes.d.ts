@@ -41,7 +41,7 @@ export interface TarefaResponse {
             },
             "titulo": string,
             "descricao": string,
-            "status": "Em andamento" | "Concluída",
+            "status": "Em andamento" | "Concluída" | "",
             "idProjeto": string | null,
             "estCiclos": number,
             "totalCiclos": number,
