@@ -1,18 +1,18 @@
-import React, {Dispatch, SetStateAction, useState} from "react";
-import {View, StyleSheet, TouchableOpacity, Pressable, Text, TextInput} from "react-native";
-import {Button} from "@rneui/themed";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Pressable, Text, TextInput } from "react-native";
+import { Button } from "@rneui/themed";
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 
-import {useEffect} from "react";
-import {Icon} from "@rneui/base";
-import {lerItem} from "@/service/localStorage";
-import {deletar, get, post} from "@/service/api";
-import {LoginResponse, TarefaResponse} from "@/service/apiTypes";
-import {TarefaController} from "@/assets/endpoints/Endpoints";
+import { useEffect } from "react";
+import { Icon } from "@rneui/base";
+import { lerItem } from "@/service/localStorage";
+import { deletar, get, post } from "@/service/api";
+import { LoginResponse, TarefaResponse } from "@/service/apiTypes";
+import { TarefaController } from "@/assets/endpoints/Endpoints";
 import Toast from "react-native-root-toast";
-import {useAuth} from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface TarefaForm {
     titulo: string;
@@ -35,13 +35,14 @@ interface Props {
     listaTarefas: TarefaResponse[];
     salvarTarefa: () => Promise<void>
     deletarTarefa: (id: string) => Promise<void>
+    atualizarTarefa: () => Promise<void>
 }
 
-export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exibeForm, setExibeForm, setFormTarefa, listaTarefas, salvarTarefa, deletarTarefa}: Props) {
+export default function TarefaList({ tarefaSelecionada, setTarefaSelecionada, exibeForm, setExibeForm, setFormTarefa, listaTarefas, salvarTarefa, deletarTarefa, atualizarTarefa }: Props) {
 
     const getData = (texto: string, prop: keyof TarefaForm) => {
 
-        setFormTarefa((prevState) => ({...prevState, [prop]: texto}));
+        setFormTarefa((prevState) => ({ ...prevState, [prop]: texto }));
     }
 
     const getTarefaSelecionada = (tarefa: TarefaResponse) => {
@@ -56,6 +57,26 @@ export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exi
 
         setTarefaSelecionada(tarefaSelecionada)
     }
+
+
+    const concluirTarefa = (tarefa: TarefaResponse) => {
+
+        if (tarefa.status !== "Concluída") {
+            const tarefaSelecionada: Tarefa = {
+                id: tarefa.id,
+                titulo: tarefa.titulo,
+                descricao: tarefa.descricao,
+                status: "CONCLUIDO",
+                estCiclos: tarefa.estCiclos,
+                totalCiclos: tarefa.totalCiclos,
+            }
+
+            setTarefaSelecionada(tarefaSelecionada)
+            atualizarTarefa()
+        }
+
+    }
+
 
     const statusColor = (status: string): string => {
 
@@ -83,10 +104,10 @@ export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exi
 
 
     return (
-        <View style={{gap: 20}}>
+        <View style={{ gap: 20 }}>
 
             <TouchableOpacity style={styles.pressNovaTarefa} onPress={() => setExibeForm(true)}>
-                <Ionicons name="add-circle-outline" size={24} color="black"/>
+                <Ionicons name="add-circle-outline" size={24} color="black" />
                 <Text style={styles.pressText}>Nova tarefa</Text>
             </TouchableOpacity>
 
@@ -94,34 +115,33 @@ export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exi
                 <View style={styles.novaTarefa}>
                     <View style={styles.inputContainer}>
                         <TextInput onChangeText={(texto) => getData(texto, "titulo")}
-                                   style={[styles.input, {width: '70%'}]} inputMode={"text"}
-                                   placeholder={"Título da Tarefa"}/>
+                            style={[styles.input, { width: '70%' }]} inputMode={"text"}
+                            placeholder={"Título da Tarefa"} />
                         <TextInput onChangeText={(texto) => getData(texto, "estCiclos")}
-                                   style={[styles.input, {width: '20%'}]} keyboardType={"number-pad"}
-                                   placeholder={"Est Ciclos"}/>
+                            style={[styles.input, { width: '20%' }]} keyboardType={"number-pad"}
+                            placeholder={"Est Ciclos"} />
                     </View>
                     <TextInput onChangeText={(texto) => getData(texto, "descricao")} style={styles.input}
-                               inputMode={"text"} multiline={true} maxLength={500} placeholder={"Descrição"}/>
-                    <View style={{flexDirection: 'row', alignSelf: 'flex-end', gap: 5}}>
-                        <Button onPress={() => setExibeForm(false)} title={"Cancelar"} color={"#D1717B"}/>
-                        <Button onPress={salvarTarefa} title={"Salvar"} color={"#D1717B"}/>
+                        inputMode={"text"} multiline={true} maxLength={500} placeholder={"Descrição"} />
+                    <View style={{ flexDirection: 'row', alignSelf: 'flex-end', gap: 5 }}>
+                        <Button onPress={() => setExibeForm(false)} title={"Cancelar"} color={"#D1717B"} />
+                        <Button onPress={salvarTarefa} title={"Salvar"} color={"#D1717B"} />
                     </View>
                 </View>
             )}
 
             {listaTarefas.map((tarefa) => (
-                <Pressable key={tarefa.id} style={[styles.pressable, estiloSelecionada(tarefa.id)]}
-                           onPress={() => getTarefaSelecionada(tarefa)}>
-                    <View style={{gap: 5}}>
+                <Pressable onLongPress={() => concluirTarefa(tarefa)} key={tarefa.id} style={[styles.pressable]}>
+                    <View style={{ gap: 5 }}>
                         <View style={styles.spacing}>
                             <Text style={styles.tituloTexto}>{tarefa.titulo}</Text>
                             <Text>{`${tarefa.totalCiclos}/${tarefa.estCiclos} `}</Text>
                         </View>
                         <Text
-                            style={[styles.status, {backgroundColor: statusColor(tarefa.status)}]}>{tarefa.status}</Text>
+                            style={[styles.status, { backgroundColor: statusColor(tarefa.status) }]}>{tarefa.status}</Text>
                         <View style={styles.corpo}>
                             <View style={styles.viewDesc}>
-                                <Text style={{fontSize: 13, color: "#535353"}}>{tarefa.descricao}</Text>
+                                <Text style={{ fontSize: 13, color: "#535353" }}>{tarefa.descricao}</Text>
                             </View>
                             <View style={styles.viewBotao}>
                                 <Button
@@ -131,7 +151,7 @@ export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exi
                                         name="delete"
                                         size={24}
                                         color="white"
-                                    />}/>
+                                    />} />
                             </View>
                         </View>
                     </View>

@@ -1,10 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react'
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {StyleSheet, Text, TouchableOpacity, View, Alert} from "react-native";
 import Button from "@/components/Button";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {useConfig} from "@/contexts/ConfigContext";
 import {guardarItem, lerItem} from "@/service/localStorage";
 import {useCiclo} from "@/contexts/CicloContext";
+import { useFocusEffect } from 'expo-router';
 
 interface Tempo {
     minutos: number,
@@ -30,7 +31,7 @@ export default function Timer(){
 
     const { ciclo, setCiclo } = useCiclo()
 
-    const {configuracoes} = useConfig();
+    const { configuracoes } = useConfig();
 
     //Estados do timer
     const [pomodoroAtivo, setPomodoroAtivo] = useState(true);
@@ -205,9 +206,26 @@ export default function Timer(){
 
     }, [configuracoes]);
 
+
+
     const trocarPlay = () => {
         setPlay(!play);
     };
+
+    const resetarTimer = () => {
+
+        Alert.alert("Resetar",
+            `Deseja resetar ciclo de pomodoro?`, [
+                {
+                    text: "Cancelar",
+                },
+                {
+                    text: "Resetar",
+                    onPress: () => setCiclo(1),
+                }
+            ])
+
+    }
 
     return(
         <View style={styles.viewInicio}>
@@ -229,12 +247,13 @@ export default function Timer(){
                     style={styles.timerText}>{String(tempo.minutos).padStart(2, '0')}:{String(tempo.segundos).padStart(2, '0')}</Text>
             </View>
 
-
-
             <View style={{alignItems: 'center', gap: 10}}>
 
             <View>
+                <TouchableOpacity onPress={resetarTimer}>
                 <Text style={{fontSize: 22}}>#{ciclo}</Text>
+                </TouchableOpacity>
+                
             </View>
                 <TouchableOpacity onPress={trocarPlay}>
                     {play ?

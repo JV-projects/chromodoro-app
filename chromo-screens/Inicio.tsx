@@ -12,6 +12,8 @@ import { atualizar, deletar, get, post } from "@/service/api";
 import Toast from "react-native-root-toast";
 import Timer from "@/components/Timer"
 import { useCiclo } from "@/contexts/CicloContext";
+import { useFocusEffect } from "@react-navigation/native";
+
 
 
 export default function Inicio() {
@@ -120,8 +122,6 @@ export default function Inicio() {
 
     useEffect(() => {
 
-        console.log("Ciclo mudou")
-
         if (tarefaSelecionada.id) {
             
             setTarefaSelecionada(prevTarefa => ({
@@ -158,7 +158,8 @@ export default function Inicio() {
                                 exibeForm={exibeForm} setExibeForm={setExibeForm}
                                 setFormTarefa={setFormTarefa}
                                 listaTarefas={listaTarefas} salvarTarefa={salvarTarefa}
-                                deletarTarefa={deletarTarefa} />}
+                                deletarTarefa={deletarTarefa}
+                                atualizarTarefa={atualizarTarefa} />}
                             {tab === 1 && <Projeto />}
                         </View>
                     ) : (
