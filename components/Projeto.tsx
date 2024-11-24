@@ -5,7 +5,7 @@ import {View, Text, StyleSheet, } from 'react-native'
 import { List } from 'react-native-paper';
 
 import { useState } from 'react';
-import Tarefa from './Tarefa';
+import TarefaList from './TarefaList';
 
 interface Projeto {
   
