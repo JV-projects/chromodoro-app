@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {Dispatch, SetStateAction, useState} from "react";
 import {View, StyleSheet, TouchableOpacity, Pressable, Text, TextInput} from "react-native";
 import {Button} from "@rneui/themed";
 
@@ -21,106 +21,46 @@ export interface TarefaForm {
     status: string;
 }
 
-interface Tarefa extends TarefaForm {
+export interface Tarefa extends TarefaForm {
     id: string;
     totalCiclos: number;
-    status: "Em andamento | Concluída"
 }
 
-export default function Tarefa() {
+interface Props {
+    tarefaSelecionada: Tarefa | undefined;
+    setTarefaSelecionada: Dispatch<SetStateAction<Tarefa>>;
+    exibeForm: boolean;
+    setExibeForm: Dispatch<SetStateAction<boolean>>;
+    setFormTarefa: Dispatch<SetStateAction<TarefaForm>>;
+    listaTarefas: TarefaResponse[];
+    salvarTarefa: () => Promise<void>
+    deletarTarefa: (id: string) => Promise<void>
+}
 
-    const {token} = useAuth()
-
-    const [exibeForm, setExibeForm] = useState<boolean>(false);
-    const [formTarefa, setFormTarefa] = useState<TarefaForm>({
-        titulo: "",
-        estCiclos: 0,
-        descricao: "",
-        status: "ANDAMENTO"
-    })
-    const [listaTarefas, setListaTarefas] = useState<TarefaResponse[]>([])
-
-    // tem que passar a lógica da tarefa selecionada pra o Inicio, para poder saber qual tarefa irá ser atualizada
-    // na questão de ciclos concluidos/status
-    const [tarefaSelecionada, setTarefaSelecionada] = useState<TarefaResponse>()
-
-    console.log(tarefaSelecionada)
-
-    const carregarTarefas = async () => {
-
-        const usuario: LoginResponse = await lerItem("usuarioAutenticado")
-
-        try {
-            const resposta =
-                await get<TarefaResponse[]>(TarefaController.consultarTarefas(usuario.username), token)
-
-            const data = resposta.data
-
-            if (resposta.status == 200) {
-                if (data.length != listaTarefas.length) {
-                    setListaTarefas(data)
-                }
-            }
-        } catch (erro) {
-            let toast = Toast.show(`Erro ao carregar: ${erro}`, {
-                duration: Toast.durations.LONG
-            })
-        }
-    }
-
-
-    useEffect(() => {
-
-        carregarTarefas()
-
-    }, [listaTarefas])
+export default function TarefaList({tarefaSelecionada, setTarefaSelecionada, exibeForm, setExibeForm, setFormTarefa, listaTarefas, salvarTarefa, deletarTarefa}: Props) {
 
     const getData = (texto: string, prop: keyof TarefaForm) => {
 
         setFormTarefa((prevState) => ({...prevState, [prop]: texto}));
     }
 
-    const salvarTarefa = async () => {
-        const usuario: LoginResponse = await lerItem("usuarioAutenticado")
-
-        try {
-            const resposta =
-                await post<TarefaForm, TarefaResponse>(formTarefa,
-                    TarefaController.salvarTarefa(usuario.username),
-                    token)
-            let toast = Toast.show(`Tarefa ${resposta.data.titulo} salva com sucesso!`, {
-                duration: Toast.durations.LONG
-            })
-
-            setExibeForm(!exibeForm)
-            setListaTarefas([])
-        } catch (erro) {
-            let toast = Toast.show(`Erro ao salvar: ${erro}`, {
-                duration: Toast.durations.LONG
-            })
+    const getTarefaSelecionada = (tarefa: TarefaResponse) => {
+        const tarefaSelecionada: Tarefa = {
+            id: tarefa.id,
+            titulo: tarefa.titulo,
+            descricao: tarefa.descricao,
+            status: "ANDAMENTO",
+            estCiclos: tarefa.estCiclos,
+            totalCiclos: tarefa.totalCiclos,
         }
-    }
 
-    const deletarTarefa = async (id: string) => {
-        try {
-            const resposta =
-                await deletar<string>(TarefaController.deletarTarefa, id, token)
-
-            let toast = Toast.show(resposta.data, {
-                duration: Toast.durations.LONG
-            })
-            setListaTarefas([])
-        } catch (erro) {
-            let toast = Toast.show(`Erro ao salvar: ${erro}`, {
-                duration: Toast.durations.LONG
-            })
-        }
+        setTarefaSelecionada(tarefaSelecionada)
     }
 
     const statusColor = (status: string): string => {
 
         const colors: { [key: string]: string } = {
-            "Concluída": "#A1FFB3",
+            "Concluído": "#A1FFB3",
             "Em andamento": "#FFDEA1"
         };
 
@@ -170,7 +110,8 @@ export default function Tarefa() {
             )}
 
             {listaTarefas.map((tarefa) => (
-                <Pressable key={tarefa.id} style={[styles.pressable, estiloSelecionada(tarefa.id)]} onPress={() => setTarefaSelecionada(tarefa)}>
+                <Pressable key={tarefa.id} style={[styles.pressable, estiloSelecionada(tarefa.id)]}
+                           onPress={() => getTarefaSelecionada(tarefa)}>
                     <View style={{gap: 5}}>
                         <View style={styles.spacing}>
                             <Text style={styles.tituloTexto}>{tarefa.titulo}</Text>
