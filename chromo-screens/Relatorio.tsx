@@ -8,21 +8,52 @@ import { useFocusEffect } from '@react-navigation/native'
 
 import { Text, View, StyleSheet, } from "react-native";
 import { lerItem } from "@/service/localStorage";
+import { get } from "@/service/api";
+import { LoginResponse, TarefaResponse } from "@/service/apiTypes";
+import { TarefaController } from "@/assets/endpoints/Endpoints";
 
 interface Relatorio {
     pomodoro: string,
     pausaCurta: string,
     pausaLonga: string,
 }
-
 export default function Relatório() {
 
-    const { isAuthenticated } = useAuth()
+    const { token, isAuthenticated } = useAuth()
 
     const [relatorio, setRelatorio] = useState<Relatorio>({ pomodoro: "0", pausaCurta: "0", pausaLonga: "0" })
 
+    const [tarefasConcluidas, setTarefasConcluidas] = useState(0)
+
+
+    const calcularTarefas = (tarefas: TarefaResponse[]) => {
+
+        if (tarefas) {
+            const tarefasFiltradas = tarefas.filter((tarefa) => tarefa.status === "Concluída");
+            setTarefasConcluidas(tarefasFiltradas.length);
+        }
+ 
+    }
+
     useFocusEffect(
         useCallback(() => {
+
+
+            const carregarTarefas = async () => {
+
+                if(isAuthenticated && token){
+
+                    const usuario : LoginResponse = await lerItem('usuarioAutenticado')
+    
+                    console.log("usuario: " + usuario.username)
+
+                    const resposta = await get<TarefaResponse[]>(TarefaController.consultarTarefas(usuario.username), token)
+    
+                   calcularTarefas(resposta.data)
+
+                }
+
+            }
 
             const carregarRelatorio = async () => {
                 const relatorioStorage = await lerItem('relatorio');
@@ -34,10 +65,13 @@ export default function Relatório() {
                     });
                 }
             }
+
+            carregarTarefas();
             carregarRelatorio();
 
 
         }, []))
+    
 
     const formatarTempo = (tempo: number) : string => {
 
@@ -73,9 +107,9 @@ export default function Relatório() {
             <TituloIcone titulo="TAREFAS" icone="pin-outline" />
 
             {isAuthenticated ? (
-                <View style={[styles.card, { flexDirection: 'row', alignItems: 'center' }]}>
+                <View style={[styles.card, { flexDirection: 'row' , alignItems: 'center'}]}>
                     <Text style={styles.texto}>Concluídas</Text>
-                    <Text style={styles.horasTexto}>30</Text>
+                    <Text style={[styles.horasTexto, {textAlign: 'right'}]}>{tarefasConcluidas}</Text>
                 </View>
             ) : (
                 <AuthMessage item="o relatório de Tarefas concluídas" />
@@ -113,6 +147,6 @@ const styles = StyleSheet.create({
     horasTexto: {
         fontSize: 28,
         color: "#535353",
-        fontWeight: '400'
+        fontWeight: '400',
     }
 })
